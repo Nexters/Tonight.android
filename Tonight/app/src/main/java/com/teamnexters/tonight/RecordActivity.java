@@ -2,12 +2,15 @@ package com.teamnexters.tonight;
 
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,13 +21,53 @@ public class RecordActivity extends ActionBarActivity {
     private MediaPlayer player;
     private MediaRecorder recorder;
     private String OUTPUT_FILE;
+    private TextView text;
+    private recordTimer recordTimer = new recordTimer(180000, 1000);
+
+
+    public class recordTimer extends CountDownTimer {
+        private long timeRemain;
+        public recordTimer(long startTime, long interval){
+            super(startTime, interval);
+            timeRemain = 0;
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            text.setText("Seconds Remaining: " + millisUntilFinished / 1000 );
+            timeRemain = millisUntilFinished / 1000 ;
+        }
+
+        @Override
+        public void onFinish() {
+            text.setText("Record Done");
+        }
+
+        public long getTimeRemain() {
+            return timeRemain;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
+        text = (TextView) this.findViewById(R.id.timer);
 
         OUTPUT_FILE = Environment.getExternalStorageDirectory() + "/audiorecorder.wav";
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopRecording();
+        stopPlaying();
+        recordTimer.cancel();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     public void buttonTapped(View view) {
@@ -51,6 +94,13 @@ public class RecordActivity extends ActionBarActivity {
                     e.printStackTrace();
                 }
                 break;
+            case R.id.stopPlay:
+                try {
+                    stopPlaying();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
         }
 
     }
@@ -70,6 +120,8 @@ public class RecordActivity extends ActionBarActivity {
         recorder.setOutputFile(OUTPUT_FILE);
         recorder.prepare();
         recorder.start();
+        recordTimer.start();
+
     }
 
     private void ditchMediaRecorder() {
@@ -79,8 +131,17 @@ public class RecordActivity extends ActionBarActivity {
 
     private void stopRecording() {
 
-        if (recorder != null)
-            recorder.stop();
+        if (recorder != null) {
+            if (recordTimer.getTimeRemain() > 165) {
+                Toast.makeText(getApplicationContext(), "Min 15 sec", Toast.LENGTH_SHORT).show();
+                recorder.stop();
+                recordTimer.cancel();
+            } else {
+                Toast.makeText(getApplicationContext(), "Record Done" , Toast.LENGTH_SHORT).show();
+                recorder.stop();
+                recordTimer.cancel();
+            }
+        }
     }
 
     private void playRecording() throws IOException {
@@ -99,6 +160,12 @@ public class RecordActivity extends ActionBarActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void stopPlaying() {
+        if (player != null && player.isPlaying()) {
+            player.stop();
         }
     }
 

@@ -14,7 +14,6 @@
         android:onClick="buttonTapped"
         android:background="@drawable/mic"
         android:layout_marginTop="61dp"
-        android:layout_below="@+id/mediaController"
         android:layout_toRightOf="@+id/stopBttn"
         android:layout_toEndOf="@+id/stopBttn" />
 
@@ -41,11 +40,24 @@
         android:layout_marginLeft="37dp"
         android:layout_marginStart="37dp" />
 
-    <MediaController
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/mediaController"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:text="Time shows"
+        android:id="@+id/timer"
+        android:layout_below="@+id/stopBttn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="79dp"
+        android:nestedScrollingEnabled="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/stopPlay"
+        android:onClick="buttonTapped"
+        android:layout_alignBottom="@+id/playBttn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:text="stop Play" />
 
 </RelativeLayout>
