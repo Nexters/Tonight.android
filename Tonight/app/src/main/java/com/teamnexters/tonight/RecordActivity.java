@@ -25,7 +25,7 @@ public class RecordActivity extends ActionBarActivity {
         setContentView(R.layout.activity_record);
 
 
-        OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/audiorecorder.3ggp";
+        OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/audiorecorder.wav";
     }
 
     public void buttonTapped(View view){
@@ -68,10 +68,9 @@ public class RecordActivity extends ActionBarActivity {
 
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         recorder.setOutputFile(OUTPUT_FILE);
-
         recorder.prepare();
         recorder.start();
     }
