@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class RecordActivity extends ActionBarActivity {
 
-    private MediaPlayer mPlayer;
+    private MediaPlayer player;
     private MediaRecorder recorder;
     private String OUTPUT_FILE;
 
@@ -24,31 +24,30 @@ public class RecordActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
 
-
-        OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/audiorecorder.wav";
+        OUTPUT_FILE = Environment.getExternalStorageDirectory() + "/audiorecorder.wav";
     }
 
-    public void buttonTapped(View view){
+    public void buttonTapped(View view) {
 
         switch (view.getId()) {
             case R.id.startBttn:
-                try{
+                try {
                     startRecording();
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case R.id.stopBttn:
-                try{
+                try {
                     stopRecording();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case R.id.playBttn:
-                try{
+                try {
                     playRecording();
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
@@ -56,14 +55,12 @@ public class RecordActivity extends ActionBarActivity {
 
     }
 
-
-
     private void startRecording() throws IOException {
 
         ditchMediaRecorder();
         File outFile = new File(OUTPUT_FILE);
 
-        if(outFile.exists())
+        if (outFile.exists())
             outFile.delete();
 
         recorder = new MediaRecorder();
@@ -76,30 +73,30 @@ public class RecordActivity extends ActionBarActivity {
     }
 
     private void ditchMediaRecorder() {
-        if(recorder != null)
+        if (recorder != null)
             recorder.release();
     }
 
     private void stopRecording() {
 
-        if(recorder != null)
+        if (recorder != null)
             recorder.stop();
     }
 
     private void playRecording() throws IOException {
 
         ditchMediaPlayer();
-        mPlayer = new MediaPlayer();
-        mPlayer.setDataSource(OUTPUT_FILE);
-        mPlayer.prepare();
-        mPlayer.start();
+        player = new MediaPlayer();
+        player.setDataSource(OUTPUT_FILE);
+        player.prepare();
+        player.start();
     }
 
     private void ditchMediaPlayer() {
-        if(mPlayer != null){
-            try{
-                mPlayer.release();
-            } catch (Exception e){
+        if (player != null){
+            try {
+                player.release();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

@@ -23,8 +23,7 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-
-    public void moveOn(View view){
+    public void moveOn(View view) {
         Intent intent = new Intent(this, RecordActivity.class);
         startActivity(intent);
     }
