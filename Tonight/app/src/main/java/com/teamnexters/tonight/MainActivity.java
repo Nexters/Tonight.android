@@ -1,53 +1,41 @@
 package com.teamnexters.tonight;
 
-import android.content.Intent;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
-import android.os.Environment;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 
 
-public class MainActivity extends ActionBarActivity {
-
-
+public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
+        pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
     }
 
-    public void moveOn(View view) {
-        Intent intent = new Intent(this, RecordActivity.class);
-        startActivity(intent);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    private class MyPagerAdapter extends FragmentPagerAdapter {
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        public Fragment getItem(int position) {
+            switch(position) {
+                case 0: return HomeFragment.newInstance("HomeFragment, Instance 1");
+                case 1: return RecordFragment.newInstance("RecordFragment, Instance 2");
+                default: return HomeFragment.newInstance("HomeFragment, Default");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
     }
 }

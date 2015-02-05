@@ -6,7 +6,6 @@
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
@@ -27,7 +26,10 @@
             android:name=".RecordActivity"
             android:label="@string/title_activity_record" >
         </activity>
-
+        <activity
+            android:name=".OnAirActivity"
+            android:label="@string/title_activity_on_air" >
+        </activity>
     </application>
 
 </manifest>
