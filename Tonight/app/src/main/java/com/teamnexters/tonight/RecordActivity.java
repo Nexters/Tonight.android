@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,31 +23,8 @@ public class RecordActivity extends ActionBarActivity {
     private MediaRecorder recorder;
     private String OUTPUT_FILE;
     private TextView text;
-    private recordTimer recordTimer = new recordTimer(180000, 1000);
-
-
-    public class recordTimer extends CountDownTimer {
-        private long timeRemain;
-        public recordTimer(long startTime, long interval){
-            super(startTime, interval);
-            timeRemain = 0;
-        }
-
-        @Override
-        public void onTick(long millisUntilFinished) {
-            text.setText("Seconds Remaining: " + millisUntilFinished / 1000 );
-            timeRemain = millisUntilFinished / 1000 ;
-        }
-
-        @Override
-        public void onFinish() {
-            text.setText("Record Done");
-        }
-
-        public long getTimeRemain() {
-            return timeRemain;
-        }
-    }
+    private boolean active = false;
+    private RecordTimer recordTimer = new RecordTimer(180000, 1000);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +53,12 @@ public class RecordActivity extends ActionBarActivity {
         switch (view.getId()) {
             case R.id.startBttn:
                 try {
-                    startRecording();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.stopBttn:
-                try {
-                    stopRecording();
+                    if(!active) {
+                        startRecording();
+                    } else {
+                        stopRecording();
+
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -120,8 +96,10 @@ public class RecordActivity extends ActionBarActivity {
         recorder.setOutputFile(OUTPUT_FILE);
         recorder.prepare();
         recorder.start();
+
         recordTimer.start();
 
+        active = true;
     }
 
     private void ditchMediaRecorder() {
@@ -135,10 +113,12 @@ public class RecordActivity extends ActionBarActivity {
             if (recordTimer.getTimeRemain() > 165) {
                 Toast.makeText(getApplicationContext(), "Min 15 sec", Toast.LENGTH_SHORT).show();
                 recorder.stop();
+
                 recordTimer.cancel();
             } else {
                 Toast.makeText(getApplicationContext(), "Record Done" , Toast.LENGTH_SHORT).show();
                 recorder.stop();
+
                 recordTimer.cancel();
             }
         }
@@ -189,5 +169,29 @@ public class RecordActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public class RecordTimer extends CountDownTimer {
+        private long timeRemain;
+
+        public RecordTimer(long startTime, long interval) {
+            super(startTime, interval);
+            timeRemain = 0;
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            text.setText("Seconds Remaining: " + millisUntilFinished / 1000);
+            timeRemain = millisUntilFinished / 1000;
+        }
+
+        @Override
+        public void onFinish() {
+            text.setText("Record Done");
+        }
+
+        public long getTimeRemain() {
+            return timeRemain;
+        }
     }
 }
