@@ -1,12 +1,18 @@
 package com.teamnexters.tonight;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class RecordFragment extends Fragment {
+
     private static final String ARG_PARAM = "param";
     private String mParam;
 
@@ -30,9 +37,11 @@ public class RecordFragment extends Fragment {
     private TextView text;
     private Button btnStart;
     private Button btnPlay;
-    private Button btnStopPlay;
+    private Button btnCancel;
+    private Button btnUpload;
 
     private RecordTimer recordTimer = new RecordTimer(180000, 1000);
+
 
     public static RecordFragment newInstance(String param) {
         RecordFragment fragment = new RecordFragment();
@@ -63,11 +72,13 @@ public class RecordFragment extends Fragment {
         text = (TextView) view.findViewById(R.id.timer);
         btnStart = (Button) view.findViewById(R.id.btn_start);
         btnPlay = (Button) view.findViewById(R.id.btn_play);
-        btnStopPlay = (Button) view.findViewById(R.id.btn_stop_play);
+        btnCancel = (Button) view.findViewById(R.id.cancel);
+        btnUpload = (Button) view.findViewById(R.id.upload);
 
         btnStart.setOnClickListener(btnClickListener);
         btnPlay.setOnClickListener(btnClickListener);
-        btnStopPlay.setOnClickListener(btnClickListener);
+        btnCancel.setOnClickListener(btnClickListener);
+        btnUpload.setOnClickListener(btnClickListener);
 
         return view;
     }
@@ -80,8 +91,15 @@ public class RecordFragment extends Fragment {
                     try {
                         if(!isRecording) {
                             startRecording();
+                            btnPlay.setVisibility(View.INVISIBLE);
+                            btnCancel.setVisibility(View.INVISIBLE);
+                            btnUpload.setVisibility(View.INVISIBLE);
+
                         } else {
                             stopRecording();
+                            btnPlay.setVisibility(View.VISIBLE);
+                            btnCancel.setVisibility(View.VISIBLE);
+                            btnUpload.setVisibility(View.VISIBLE);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -89,18 +107,30 @@ public class RecordFragment extends Fragment {
                     break;
                 case R.id.btn_play:
                     try {
-                        playRecording();
+                        if(player != null && player.isPlaying()){
+                            stopPlaying();
+                        } else {
+                            playRecording();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
-                case R.id.btn_stop_play:
+
+                case R.id.cancel:
                     try {
-                        stopPlaying();
+                        dialog_Cancel(getActivity());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
+                case R.id.upload:
+                    try {
+                        dialog_Upload(getActivity());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
             }
         }
     };
@@ -152,18 +182,61 @@ public class RecordFragment extends Fragment {
             recorder.release();
     }
 
+    public void dialog_Cancel(Context ctx) {
+
+        DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener(){
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Toast.makeText(getActivity().getApplicationContext(),"File Deleted",Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        Toast.makeText(getActivity().getApplicationContext(),"File Saved", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder cancelDialog = new AlertDialog.Builder(ctx);
+        cancelDialog.setMessage("Do you want to delete the record?").setPositiveButton("Yes", cancelListener).setNegativeButton("No", cancelListener).show();
+
+    }
+
+    public void dialog_Upload(Context ctx) {
+        DialogInterface.OnClickListener uploadListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Toast.makeText(getActivity().getApplicationContext(), "File Uploaded", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        Toast.makeText(getActivity().getApplicationContext(), "Upload Cancel", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder uploadDialog = new AlertDialog.Builder(ctx);
+        uploadDialog.setMessage("Do you want to upload the record?").setPositiveButton("Upload", uploadListener).setNegativeButton("No", uploadListener).show();
+
+    }
     private void stopRecording() {
-        if (recorder != null) {
+        if (recorder != null && isRecording) {
             if (recordTimer.getTimeRemain() > 165) {
                 Toast.makeText(getActivity().getApplicationContext(), "Min 15 sec", Toast.LENGTH_SHORT).show();
                 recorder.stop();
 
                 recordTimer.cancel();
+                isRecording = false;
             } else {
                 Toast.makeText(getActivity().getApplicationContext(), "Record Done" , Toast.LENGTH_SHORT).show();
                 recorder.stop();
 
                 recordTimer.cancel();
+                isRecording = false;
             }
         }
     }
