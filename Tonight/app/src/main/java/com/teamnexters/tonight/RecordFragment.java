@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +21,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class RecordFragment extends Fragment {
 
@@ -41,7 +51,6 @@ public class RecordFragment extends Fragment {
     private Button btnUpload;
 
     private RecordTimer recordTimer = new RecordTimer(180000, 1000);
-
 
     public static RecordFragment newInstance(String param) {
         RecordFragment fragment = new RecordFragment();
@@ -191,6 +200,10 @@ public class RecordFragment extends Fragment {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         Toast.makeText(getActivity().getApplicationContext(),"File Deleted",Toast.LENGTH_SHORT).show();
+                        deleteFile();
+                        btnPlay.setVisibility(View.INVISIBLE);
+                        btnCancel.setVisibility(View.INVISIBLE);
+                        btnUpload.setVisibility(View.INVISIBLE);
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -211,6 +224,11 @@ public class RecordFragment extends Fragment {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         Toast.makeText(getActivity().getApplicationContext(), "File Uploaded", Toast.LENGTH_SHORT).show();
+                        try {
+                            toZip();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
                         Toast.makeText(getActivity().getApplicationContext(), "Upload Cancel", Toast.LENGTH_SHORT).show();
@@ -223,6 +241,13 @@ public class RecordFragment extends Fragment {
         uploadDialog.setMessage("Do you want to upload the record?").setPositiveButton("Upload", uploadListener).setNegativeButton("No", uploadListener).show();
 
     }
+
+    private void deleteFile() {
+        File file = new File(OUTPUT_FILE);
+        if(file.exists()){
+            file.delete();
+        }
+    }
     private void stopRecording() {
         if (recorder != null && isRecording) {
             if (recordTimer.getTimeRemain() > 165) {
@@ -230,6 +255,7 @@ public class RecordFragment extends Fragment {
                 recorder.stop();
 
                 recordTimer.cancel();
+                deleteFile();
                 isRecording = false;
             } else {
                 Toast.makeText(getActivity().getApplicationContext(), "Record Done" , Toast.LENGTH_SHORT).show();
@@ -264,6 +290,34 @@ public class RecordFragment extends Fragment {
             player.stop();
         }
     }
+
+    private void toZip() throws IOException {
+
+        byte[] buffer = new byte[2048];
+        try {
+            String audioZip = Environment.getExternalStorageDirectory() + "/audio.zip";
+            ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(audioZip));
+            ZipEntry zipEntry = new ZipEntry(OUTPUT_FILE);
+            zipFile.putNextEntry(zipEntry);
+            FileInputStream inputStream = new FileInputStream(OUTPUT_FILE);
+
+            int len;
+            while ((len = inputStream.read(buffer)) > 0) {
+                zipFile.write(buffer, 0, len);
+            }
+
+            inputStream.close();
+            zipFile.closeEntry();
+            zipFile.close();
+
+            String encodedFile = Base64.encodeToString(buffer, Base64.DEFAULT);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     public class RecordTimer extends CountDownTimer {
         private long timeRemain;
