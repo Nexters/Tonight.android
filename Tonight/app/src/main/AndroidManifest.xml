@@ -35,10 +35,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".RecordActivity"
+        <fragment
+            android:name=".RecordFragment"
             android:label="@string/title_activity_record" >
-        </activity>
+        </fragment>
         <activity
             android:name=".OnAirActivity"
             android:label="@string/title_activity_on_air" >
