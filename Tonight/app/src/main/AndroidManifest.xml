@@ -39,12 +39,6 @@
             android:name=".RecordFragment"
             android:label="@string/title_activity_record" >
         </fragment>
-        <activity
-            android:name=".OnAirActivity"
-            android:label="@string/title_activity_on_air" >
-        </activity>
-
-
 
     </application>
 

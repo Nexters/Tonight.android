@@ -51,7 +51,7 @@ public class HomeFragment extends Fragment {
     String usr_uuid = null;
     String alarmyn = "Y";
     final String LG0001 = "LG0001"; //로그인
-    static final String url = "http://128.199.247.184";
+    static final String url = "http://ssss.maden.kr/gateway";
 
     public static HomeFragment newInstance(String param) {
         HomeFragment fragment = new HomeFragment();
@@ -91,13 +91,6 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         btnOnAir = (Button) view.findViewById(R.id.btn_on_air);
-        btnOnAir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), OnAirActivity.class);
-                startActivity(intent);
-            }
-        });
 
         /**
          * 임시용!!!! UUID,PUSHID를 JSON으로 서버에 데이터보내기.
