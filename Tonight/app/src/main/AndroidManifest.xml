@@ -7,7 +7,20 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--GCM push 기능관련 permission-->
+    <permission android:name="android.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <uses-permission android:name="android.permission.C2D_MESSAGE" />
+    <!-- GCM messages 수신하기 위해서 -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <!-- 인터넷 접속 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 구글계정 접근 -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!-- 메시지 수신하려면 절전모드로 가면 안됨 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -30,6 +43,9 @@
             android:name=".OnAirActivity"
             android:label="@string/title_activity_on_air" >
         </activity>
+
+
+
     </application>
 
 </manifest>

@@ -12,4 +12,11 @@
         android:id="@+id/btn_on_air"
         android:layout_gravity="center_horizontal" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="로그인임시"
+        android:id="@+id/button2"
+        android:layout_gravity="center_horizontal" />
+
 </LinearLayout>

@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -45,12 +47,14 @@ public class RecordFragment extends Fragment {
     private MediaRecorder recorder;
 
     private TextView text;
-    private Button btnStart;
-    private Button btnPlay;
-    private Button btnCancel;
-    private Button btnUpload;
+    private ImageButton btnStart;
+    private ImageButton btnPlay;
+    private ImageButton btnCancel;
+    private ImageButton btnUpload;
 
-    private RecordTimer recordTimer = new RecordTimer(180000, 1000);
+    private long seconds = 180000;
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("mm:ss");
+    private RecordTimer recordTimer = new RecordTimer(seconds, 1000);
 
     public static RecordFragment newInstance(String param) {
         RecordFragment fragment = new RecordFragment();
@@ -78,11 +82,11 @@ public class RecordFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_record, container, false);
 
+        btnStart = (ImageButton) view.findViewById(R.id.btn_start);
+        btnPlay = (ImageButton) view.findViewById(R.id.btn_play);
+        btnCancel = (ImageButton) view.findViewById(R.id.cancel);
+        btnUpload = (ImageButton) view.findViewById(R.id.upload);
         text = (TextView) view.findViewById(R.id.timer);
-        btnStart = (Button) view.findViewById(R.id.btn_start);
-        btnPlay = (Button) view.findViewById(R.id.btn_play);
-        btnCancel = (Button) view.findViewById(R.id.cancel);
-        btnUpload = (Button) view.findViewById(R.id.upload);
 
         btnStart.setOnClickListener(btnClickListener);
         btnPlay.setOnClickListener(btnClickListener);
@@ -166,6 +170,7 @@ public class RecordFragment extends Fragment {
         super.onResume();
     }
 
+    // 녹음 시작
     private void startRecording() throws IOException {
         ditchMediaRecorder();
         File outFile = new File(OUTPUT_FILE);
@@ -191,6 +196,7 @@ public class RecordFragment extends Fragment {
             recorder.release();
     }
 
+    //취소 버튼 클릭 시 확인창
     public void dialog_Cancel(Context ctx) {
 
         DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener(){
@@ -217,6 +223,7 @@ public class RecordFragment extends Fragment {
 
     }
 
+    // 업로드버튼 클릭시 확인창
     public void dialog_Upload(Context ctx) {
         DialogInterface.OnClickListener uploadListener = new DialogInterface.OnClickListener() {
             @Override
@@ -242,12 +249,15 @@ public class RecordFragment extends Fragment {
 
     }
 
+    //파일 삭제
     private void deleteFile() {
         File file = new File(OUTPUT_FILE);
         if(file.exists()){
             file.delete();
         }
     }
+
+    // 녹음 중지
     private void stopRecording() {
         if (recorder != null && isRecording) {
             if (recordTimer.getTimeRemain() > 165) {
@@ -267,6 +277,7 @@ public class RecordFragment extends Fragment {
         }
     }
 
+    // 녹음파일 재생
     private void playRecording() throws IOException {
         ditchMediaPlayer();
         player = new MediaPlayer();
@@ -285,12 +296,14 @@ public class RecordFragment extends Fragment {
         }
     }
 
+    //녹음재생 중지
     private void stopPlaying() {
         if (player != null && player.isPlaying()) {
             player.stop();
         }
     }
 
+    //오디오 파일 압축
     private void toZip() throws IOException {
 
         byte[] buffer = new byte[2048];
@@ -319,6 +332,7 @@ public class RecordFragment extends Fragment {
     }
 
 
+    //녹음시간 카운트
     public class RecordTimer extends CountDownTimer {
         private long timeRemain;
 
@@ -329,17 +343,23 @@ public class RecordFragment extends Fragment {
 
         @Override
         public void onTick(long millisUntilFinished) {
-            text.setText("Seconds Remaining: " + millisUntilFinished / 1000);
+            text.setText(timeFormat.format(millisUntilFinished));
             timeRemain = millisUntilFinished / 1000;
+
         }
 
         @Override
         public void onFinish() {
-            text.setText("Record Done");
+            text.setText(timeFormat.format(0));
         }
 
         public long getTimeRemain() {
             return timeRemain;
         }
+
+
     }
+
+
+
 }
