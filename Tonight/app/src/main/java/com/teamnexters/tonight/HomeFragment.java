@@ -21,7 +21,10 @@ import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 
 import org.apache.http.HttpResponse;
+<<<<<<< HEAD
 import org.apache.http.NameValuePair;
+=======
+>>>>>>> 2b1571c7a20325bdc5778224aabbcd015455fd2b
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -29,15 +32,21 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+<<<<<<< HEAD
 import org.apache.http.message.BasicNameValuePair;
+=======
+>>>>>>> 2b1571c7a20325bdc5778224aabbcd015455fd2b
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 
+=======
+>>>>>>> 2b1571c7a20325bdc5778224aabbcd015455fd2b
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -55,7 +64,11 @@ public class HomeFragment extends Fragment {
     String usr_uuid = null;
     String alarmyn = "Y";
     final String LG0001 = "LG0001"; //로그인
+<<<<<<< HEAD
     static final String url = "http://jung2.maden.kr/gateway/";
+=======
+    static final String url = "http://ssss.maden.kr/gateway";
+>>>>>>> 2b1571c7a20325bdc5778224aabbcd015455fd2b
 
     public static HomeFragment newInstance(String param) {
         HomeFragment fragment = new HomeFragment();
@@ -95,11 +108,84 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         btnOnAir = (Button) view.findViewById(R.id.btn_on_air);
-        btnOnAir.setOnClickListener(new View.OnClickListener() {
+
+        /**
+         * 임시용!!!! UUID,PUSHID를 JSON으로 서버에 데이터보내기.
+         */
+        button2 = (Button) view.findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), OnAirActivity.class);
-                startActivity(intent);
+                //기계 UUID 가져옴
+                usr_uuid = GetDevicesUUID(getActivity().getBaseContext());
+                Log.i(MSG,"기기UUID값 :" + usr_uuid);
+                Toast.makeText(getActivity().getApplicationContext(), usr_uuid, Toast.LENGTH_SHORT).show();
+                //push id
+                String usr_pushid;
+                usr_pushid = GCMRegistrar.getRegistrationId(getActivity().getBaseContext());
+                Log.i(MSG,"pushID :" + usr_pushid);
+                Toast.makeText(getActivity().getApplicationContext(), usr_pushid, Toast.LENGTH_SHORT).show();
+
+                JSONObject jObject = new JSONObject();
+                JSONArray jArray = new JSONArray();
+                JSONObject sObject = new JSONObject();//jArray 내에 들어갈 json
+                try
+                {
+                    sObject.put("alarmyn", alarmyn);
+                    sObject.put("usr_pushid", "임시값dkfkejkf");
+                    sObject.put("usr_uuid", usr_uuid);
+                    jArray.put(sObject);
+                    jObject.put("_req_data", jArray);//배열을 넣음
+                    jObject.put("_req_svc", LG0001);
+                }
+                catch (JSONException e)
+                {e.printStackTrace();}
+
+                //원하는 json데이터 값 : jstring
+                String jstring = jObject.toString();
+                Log.i(MSG,"json :" + jstring);
+                Toast.makeText(getActivity().getApplicationContext(), jstring, Toast.LENGTH_SHORT).show();
+
+                DefaultHttpClient client = new DefaultHttpClient();
+                try {
+                    //android 3.0 부터는 네트워크작업을 UI쓰레드가 아닌 별도의 쓰레드로 돌려야해서
+                    if(android.os.Build.VERSION.SDK_INT > 9) {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                        StrictMode.setThreadPolicy(policy);
+
+                        //연결지연시
+                        HttpParams params = client.getParams();
+                        HttpConnectionParams.setConnectionTimeout(params, 3000);
+                        HttpConnectionParams.setSoTimeout(params, 3000);
+                        //Json 데이터를 서버로 전송
+                        HttpPost httpPost = new HttpPost(url);
+                        httpPost.setEntity(new StringEntity(jstring));
+                        httpPost.setHeader("Accept", "application/json");
+                        httpPost.setHeader("Content-type", "application/json");
+                        //데이터보낸 뒤 서버에서 데이터를 받아오는 과정
+                        HttpResponse response = client.execute(httpPost);
+                        BufferedReader bufferReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "utf-8"));
+                        String line = null;
+                        String result = "";
+
+                        while ((line = bufferReader.readLine()) != null) {
+                            result += line;
+                            Log.i(MSG, result);
+                        }
+                    } //if문(android version)
+                    else{
+                        Log.i(MSG, "android version이 3.0 이하");
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (ClientProtocolException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    client.getConnectionManager().shutdown(); // 연결 지연 종료
+                }
+
+
             }
         });
 
