@@ -6,10 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
-public class OnairFragment extends Fragment {
+public class OnAirFragment extends Fragment {
 
     private static final String MSG = "OnairFragemnt";
     @Override
@@ -20,9 +18,9 @@ public class OnairFragment extends Fragment {
         return v;
     }
 
-    public static OnairFragment newInstance(String text) {
+    public static OnAirFragment newInstance(String text) {
 
-        OnairFragment f = new OnairFragment();
+        OnAirFragment f = new OnAirFragment();
         Bundle b = new Bundle();
         b.putString("msg", text);
 

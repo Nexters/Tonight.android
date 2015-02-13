@@ -39,15 +39,13 @@
             android:name=".RecordFragment"
             android:label="@string/title_activity_record" >
         </fragment>
-<<<<<<< HEAD
+
         <activity
-            android:name=".OnAirActivity"
+            android:name=".OnAirFragment"
             android:label="@string/title_activity_on_air" >
         </activity>
 
 
-=======
->>>>>>> 2b1571c7a20325bdc5778224aabbcd015455fd2b
 
     </application>
 

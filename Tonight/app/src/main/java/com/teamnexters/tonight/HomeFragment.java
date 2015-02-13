@@ -21,10 +21,7 @@ import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 
 import org.apache.http.HttpResponse;
-<<<<<<< HEAD
 import org.apache.http.NameValuePair;
-=======
->>>>>>> 2b1571c7a20325bdc5778224aabbcd015455fd2b
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -32,21 +29,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-<<<<<<< HEAD
 import org.apache.http.message.BasicNameValuePair;
-=======
->>>>>>> 2b1571c7a20325bdc5778224aabbcd015455fd2b
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-<<<<<<< HEAD
 import java.util.ArrayList;
-
-=======
->>>>>>> 2b1571c7a20325bdc5778224aabbcd015455fd2b
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -64,11 +54,8 @@ public class HomeFragment extends Fragment {
     String usr_uuid = null;
     String alarmyn = "Y";
     final String LG0001 = "LG0001"; //로그인
-<<<<<<< HEAD
+
     static final String url = "http://jung2.maden.kr/gateway/";
-=======
-    static final String url = "http://ssss.maden.kr/gateway";
->>>>>>> 2b1571c7a20325bdc5778224aabbcd015455fd2b
 
     public static HomeFragment newInstance(String param) {
         HomeFragment fragment = new HomeFragment();
