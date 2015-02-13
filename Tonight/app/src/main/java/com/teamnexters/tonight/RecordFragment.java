@@ -1,9 +1,6 @@
 package com.teamnexters.tonight;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
@@ -13,24 +10,17 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -45,8 +35,7 @@ public class RecordFragment extends Fragment {
 
     private MediaPlayer player;
     private MediaRecorder recorder;
-
-    private TextView text;
+    private TextView tvTimer;
     private ImageButton btnStart;
     private ImageButton btnPlay;
     private ImageButton btnCancel;
@@ -81,19 +70,24 @@ public class RecordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_record, container, false);
+        initBttn(view);
+        eventListener();
+        return view;
+    }
 
-        btnStart = (ImageButton) view.findViewById(R.id.btn_start);
-        btnPlay = (ImageButton) view.findViewById(R.id.btn_play);
-        btnCancel = (ImageButton) view.findViewById(R.id.cancel);
-        btnUpload = (ImageButton) view.findViewById(R.id.upload);
-        text = (TextView) view.findViewById(R.id.timer);
-
+    private void eventListener() {
         btnStart.setOnClickListener(btnClickListener);
         btnPlay.setOnClickListener(btnClickListener);
         btnCancel.setOnClickListener(btnClickListener);
         btnUpload.setOnClickListener(btnClickListener);
+    }
 
-        return view;
+    private void initBttn(View view) {
+        btnStart = (ImageButton) view.findViewById(R.id.btn_start);
+        btnPlay = (ImageButton) view.findViewById(R.id.btn_play);
+        btnCancel = (ImageButton) view.findViewById(R.id.cancel);
+        btnUpload = (ImageButton) view.findViewById(R.id.upload);
+        tvTimer = (TextView) view.findViewById(R.id.timer);
     }
 
     View.OnClickListener btnClickListener = new View.OnClickListener() {
@@ -131,38 +125,20 @@ public class RecordFragment extends Fragment {
                     break;
 
                 case R.id.cancel:
-                    try {
-                        dialog_Cancel(getActivity());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    showCancelDialog(getActivity());
                     break;
                 case R.id.upload:
-                    try {
-                        dialog_Upload(getActivity());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+                    showUploadDialog(getActivity());
+                    break;
             }
         }
     };
-
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
     @Override
     public void onPause() {
         super.onPause();
         stopRecording();
         stopPlaying();
-        recordTimer.cancel();
     }
 
     @Override
@@ -173,10 +149,7 @@ public class RecordFragment extends Fragment {
     // 녹음 시작
     private void startRecording() throws IOException {
         ditchMediaRecorder();
-        File outFile = new File(OUTPUT_FILE);
-
-        if (outFile.exists())
-            outFile.delete();
+        deleteFile();
 
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -185,9 +158,7 @@ public class RecordFragment extends Fragment {
         recorder.setOutputFile(OUTPUT_FILE);
         recorder.prepare();
         recorder.start();
-
         recordTimer.start();
-
         isRecording = true;
     }
 
@@ -197,7 +168,7 @@ public class RecordFragment extends Fragment {
     }
 
     //취소 버튼 클릭 시 확인창
-    public void dialog_Cancel(Context ctx) {
+    public void showCancelDialog(Context ctx) {
 
         DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener(){
 
@@ -220,11 +191,10 @@ public class RecordFragment extends Fragment {
         };
         AlertDialog.Builder cancelDialog = new AlertDialog.Builder(ctx);
         cancelDialog.setMessage("Do you want to delete the record?").setPositiveButton("Yes", cancelListener).setNegativeButton("No", cancelListener).show();
-
     }
 
     // 업로드버튼 클릭시 확인창
-    public void dialog_Upload(Context ctx) {
+    public void showUploadDialog(Context ctx) {
         DialogInterface.OnClickListener uploadListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -343,14 +313,14 @@ public class RecordFragment extends Fragment {
 
         @Override
         public void onTick(long millisUntilFinished) {
-            text.setText(timeFormat.format(millisUntilFinished));
+            tvTimer.setText(timeFormat.format(millisUntilFinished));
             timeRemain = millisUntilFinished / 1000;
 
         }
 
         @Override
         public void onFinish() {
-            text.setText(timeFormat.format(0));
+            tvTimer.setText(timeFormat.format(0));
         }
 
         public long getTimeRemain() {

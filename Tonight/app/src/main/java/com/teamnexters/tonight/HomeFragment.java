@@ -24,18 +24,20 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,6 +50,9 @@ public class HomeFragment extends Fragment {
     private static final String MSG = "HomeFragment";
     private String mParam;
 
+    private static String strJSONInput;
+    private static String strJSONOutput;
+
     private Button btnOnAir;
     private Button button2;
 
@@ -55,7 +60,7 @@ public class HomeFragment extends Fragment {
     String alarmyn = "Y";
     final String LG0001 = "LG0001"; //로그인
 
-    static final String url = "http://jung2.maden.kr/gateway/";
+    static final String url = "http://ssss.maden.kr/gateway";
 
     public static HomeFragment newInstance(String param) {
         HomeFragment fragment = new HomeFragment();
@@ -99,6 +104,7 @@ public class HomeFragment extends Fragment {
         /**
          * 임시용!!!! UUID,PUSHID를 JSON으로 서버에 데이터보내기.
          */
+        /*
         button2 = (Button) view.findViewById(R.id.button2);
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +128,7 @@ public class HomeFragment extends Fragment {
                     sObject.put("usr_pushid", "임시값dkfkejkf");
                     sObject.put("usr_uuid", usr_uuid);
                     jArray.put(sObject);
-                    jObject.put("_req_data", jArray);//배열을 넣음
+                    jObject.put("_req_data", jArray);//배열을
                     jObject.put("_req_svc", LG0001);
                 }
                 catch (JSONException e)
@@ -175,8 +181,8 @@ public class HomeFragment extends Fragment {
 
             }
         });
-
-        /**
+*/
+        /*
          * 임시용!!!! UUID,PUSHID를 JSON으로 서버에 데이터보내기.
          */
         button2 = (Button) view.findViewById(R.id.button2);
@@ -223,17 +229,24 @@ public class HomeFragment extends Fragment {
                         //Param 설정
                         ArrayList<NameValuePair> paramList = new ArrayList<NameValuePair>();
                         paramList.add(new BasicNameValuePair("JSONData", jstring));
-
+                        //Toast.makeText(getActivity().getApplicationContext(), paramList.toString(), Toast.LENGTH_SHORT).show();
                         //연결지연시
-                        HttpParams params = client.getParams();
+                        HttpParams params = new BasicHttpParams();
                         HttpConnectionParams.setConnectionTimeout(params, 3000);
                         HttpConnectionParams.setSoTimeout(params, 3000);
                         //Json 데이터를 서버로 전송
                         HttpPost httpPost = new HttpPost(url);
                         httpPost.setEntity(new UrlEncodedFormEntity(paramList, "UTF-8"));
-                        httpPost.setHeader("Accept", "application/json");
-                        httpPost.setHeader("Content-type", "application/json");
+                       // httpPost.setHeader("Accept", "application/json");
+                       // httpPost.setHeader("Content-type", "application/json");
                         //데이터보낸 뒤 서버에서 데이터를 받아오는 과정
+                        ResponseHandler<String> reshand = new BasicResponseHandler();
+
+                        String strResponseBody = client.execute(httpPost,reshand);
+
+                        strJSONInput = strResponseBody.trim();
+                        strJSONOutput = null;
+
                         HttpResponse response = client.execute(httpPost);
                         BufferedReader bufferReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "utf-8"));
                         String line = null;
@@ -261,6 +274,8 @@ public class HomeFragment extends Fragment {
         });
         return view;
     }
+
+
 
     //서버와의 연결여부
     public boolean isConnected(){

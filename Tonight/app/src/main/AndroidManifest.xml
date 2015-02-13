@@ -40,10 +40,10 @@
             android:label="@string/title_activity_record" >
         </fragment>
 
-        <activity
+        <fragment
             android:name=".OnAirFragment"
             android:label="@string/title_activity_on_air" >
-        </activity>
+        </fragment>
 
 
 
