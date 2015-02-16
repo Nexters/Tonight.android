@@ -207,6 +207,7 @@ public class HomeFragment extends Fragment {
                     sObject.put("alarmyn", alarmyn);
                     sObject.put("usr_pushid", "임시값dkfkejkf");
                     sObject.put("usr_uuid", usr_uuid);
+                    sObject.put("usr_nn","Kyuri IM");
                     jArray.put(sObject);
                     jObject.put("_req_data", jArray);//배열을 넣음
                     jObject.put("_req_svc", LG0001);

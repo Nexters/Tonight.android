@@ -1,19 +1,25 @@
 package com.teamnexters.tonight;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +30,8 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static com.teamnexters.tonight.R.drawable.pause;
 
 public class RecordFragment extends Fragment {
 
@@ -40,10 +48,16 @@ public class RecordFragment extends Fragment {
     private ImageButton btnPlay;
     private ImageButton btnCancel;
     private ImageButton btnUpload;
+    private ImageButton btnDone;
+    private Typeface typeface;
 
     private long seconds = 180000;
     private SimpleDateFormat timeFormat = new SimpleDateFormat("mm:ss");
     private RecordTimer recordTimer = new RecordTimer(seconds, 1000);
+
+    MyHandler handler;
+    private ProgressBar bar;
+    boolean progressState = false;
 
     public static RecordFragment newInstance(String param) {
         RecordFragment fragment = new RecordFragment();
@@ -51,10 +65,11 @@ public class RecordFragment extends Fragment {
         args.putString(ARG_PARAM, param);
         fragment.setArguments(args);
         return fragment;
+
     }
 
-    public RecordFragment() {
-        // Required empty public constructor
+    public RecordFragment () {
+
     }
 
     @Override
@@ -63,6 +78,8 @@ public class RecordFragment extends Fragment {
         if (getArguments() != null) {
             mParam = getArguments().getString(ARG_PARAM);
         }
+        handler = new MyHandler();
+        setThread();
     }
 
     @Override
@@ -72,7 +89,13 @@ public class RecordFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_record, container, false);
         initBttn(view);
         eventListener();
+        setFont();
         return view;
+    }
+
+    private void setFont() {
+        typeface = Typeface.createFromAsset(getActivity().getAssets(), "font/NotoSansCJKkr-Regular.otf");
+        tvTimer.setTypeface(typeface);
     }
 
     private void eventListener() {
@@ -80,34 +103,27 @@ public class RecordFragment extends Fragment {
         btnPlay.setOnClickListener(btnClickListener);
         btnCancel.setOnClickListener(btnClickListener);
         btnUpload.setOnClickListener(btnClickListener);
+        btnDone.setOnClickListener(btnClickListener);
     }
 
     private void initBttn(View view) {
         btnStart = (ImageButton) view.findViewById(R.id.btn_start);
         btnPlay = (ImageButton) view.findViewById(R.id.btn_play);
+        btnDone = (ImageButton) view.findViewById(R.id.done);
         btnCancel = (ImageButton) view.findViewById(R.id.cancel);
         btnUpload = (ImageButton) view.findViewById(R.id.upload);
         tvTimer = (TextView) view.findViewById(R.id.timer);
+        bar = (ProgressBar) view.findViewById(R.id.circularProgressBar);
     }
 
     View.OnClickListener btnClickListener = new View.OnClickListener() {
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_start:
                     try {
-                        if(!isRecording) {
-                            startRecording();
-                            btnPlay.setVisibility(View.INVISIBLE);
-                            btnCancel.setVisibility(View.INVISIBLE);
-                            btnUpload.setVisibility(View.INVISIBLE);
-
-                        } else {
-                            stopRecording();
-                            btnPlay.setVisibility(View.VISIBLE);
-                            btnCancel.setVisibility(View.VISIBLE);
-                            btnUpload.setVisibility(View.VISIBLE);
-                        }
+                        startRecording();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -127,6 +143,11 @@ public class RecordFragment extends Fragment {
                 case R.id.cancel:
                     showCancelDialog(getActivity());
                     break;
+
+                case R.id.done :
+                    stopRecording();
+                    break;
+
                 case R.id.upload:
                     showUploadDialog(getActivity());
                     break;
@@ -146,10 +167,30 @@ public class RecordFragment extends Fragment {
         super.onResume();
     }
 
+    public void setThread(){
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while(true){
+
+                        if(progressState){
+                            handler.sendMessage(new Message());
+                        }
+                        sleep(1000);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
     // 녹음 시작
     private void startRecording() throws IOException {
         ditchMediaRecorder();
         deleteFile();
+        progressState = true;
 
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -178,11 +219,7 @@ public class RecordFragment extends Fragment {
                     case DialogInterface.BUTTON_POSITIVE:
                         Toast.makeText(getActivity().getApplicationContext(),"File Deleted",Toast.LENGTH_SHORT).show();
                         deleteFile();
-                        btnPlay.setVisibility(View.INVISIBLE);
-                        btnCancel.setVisibility(View.INVISIBLE);
-                        btnUpload.setVisibility(View.INVISIBLE);
                         break;
-
                     case DialogInterface.BUTTON_NEGATIVE:
                         Toast.makeText(getActivity().getApplicationContext(),"File Saved", Toast.LENGTH_SHORT).show();
                         break;
@@ -229,6 +266,7 @@ public class RecordFragment extends Fragment {
 
     // 녹음 중지
     private void stopRecording() {
+        progressState = false;
         if (recorder != null && isRecording) {
             if (recordTimer.getTimeRemain() > 165) {
                 Toast.makeText(getActivity().getApplicationContext(), "Min 15 sec", Toast.LENGTH_SHORT).show();
@@ -327,6 +365,15 @@ public class RecordFragment extends Fragment {
             return timeRemain;
         }
 
+
+    }
+
+    class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            bar.incrementProgressBy(1);
+            super.handleMessage(msg);
+        }
 
     }
 
