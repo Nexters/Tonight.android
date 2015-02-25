@@ -4,9 +4,10 @@
     <item android:id="@android:id/background">
         <shape
             android:shape="ring"
+            android:thickness="5dp"
             android:useLevel="false">
             <solid
-                android:color="@color/gray"/>
+                android:color="@color/black"/>
         </shape>
     </item>
 
@@ -20,7 +21,8 @@
             android:toDegrees="-90">
             <shape
                 android:shape="ring"
-                android:useLevel="true">
+                android:useLevel="true"
+                android:thickness="5dp">
                 <solid
                     android:color="@color/oddity"/>				<!--  여기서 색 변경 -->
             </shape>

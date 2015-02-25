@@ -21,8 +21,10 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.android.support:support-v4:21.0.3'
     compile files('src/main/java/Libs/gcm.jar')
     compile files('src/main/java/lib/gcm.jar')
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:support-v4:21.0.3'
+    compile files('src/main/java/lib/org.apache.commons.io-2.1-sources.jar')
+    compile files('src/main/java/lib/commons-io-2.4.jar')
 }

@@ -13,8 +13,10 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,20 +25,47 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import static com.teamnexters.tonight.R.drawable.pause;
 
 public class RecordFragment extends Fragment {
 
     private static final String ARG_PARAM = "param";
     private String mParam;
+    private final String UD0001 = "UD0001";
+    String encodedFile = null;
+    private static String url = "http://ssss.maden.kr/gateway";
 
     private boolean isRecording = false;
     private String OUTPUT_FILE = Environment.getExternalStorageDirectory() + "/audiorecorder.wav";
@@ -68,7 +97,7 @@ public class RecordFragment extends Fragment {
 
     }
 
-    public RecordFragment () {
+    public RecordFragment() {
 
     }
 
@@ -123,16 +152,21 @@ public class RecordFragment extends Fragment {
             switch (v.getId()) {
                 case R.id.btn_start:
                     try {
-                        startRecording();
+                        if (isRecording && OUTPUT_FILE != null) {
+                            new AlertDialog.Builder(getActivity()).setMessage("Record Active").setNeutralButton("Exit", null).show();
+                        } else {
+                            startRecording();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
                 case R.id.btn_play:
                     try {
-                        if(player != null && player.isPlaying()){
+                        if ( player.isPlaying()) {
                             stopPlaying();
                         } else {
+                            btnPlay.setBackground(getResources().getDrawable(R.drawable.pause));
                             playRecording();
                         }
                     } catch (Exception e) {
@@ -142,14 +176,25 @@ public class RecordFragment extends Fragment {
 
                 case R.id.cancel:
                     showCancelDialog(getActivity());
+                    stopPlaying();
                     break;
 
-                case R.id.done :
+                case R.id.done:
                     stopRecording();
+                    btnDone.setVisibility(View.INVISIBLE);
+                    btnPlay.setVisibility(View.VISIBLE);
+                    btnCancel.setVisibility(View.VISIBLE);
+                    btnUpload.setVisibility(View.VISIBLE);
                     break;
 
                 case R.id.upload:
-                    showUploadDialog(getActivity());
+                    if (OUTPUT_FILE == null) {
+                        new AlertDialog.Builder(getActivity()).setMessage("사연을 녹음해주세요").setNeutralButton("Okay", null).show();
+                    } else if (OUTPUT_FILE != null) {
+                        showUploadDialog(getActivity());
+                        stopPlaying();
+
+                    }
                     break;
             }
         }
@@ -167,14 +212,14 @@ public class RecordFragment extends Fragment {
         super.onResume();
     }
 
-    public void setThread(){
+    public void setThread() {
         new Thread() {
             @Override
             public void run() {
                 try {
-                    while(true){
+                    while (true) {
 
-                        if(progressState){
+                        if (progressState) {
                             handler.sendMessage(new Message());
                         }
                         sleep(1000);
@@ -211,17 +256,18 @@ public class RecordFragment extends Fragment {
     //취소 버튼 클릭 시 확인창
     public void showCancelDialog(Context ctx) {
 
-        DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener(){
+        DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        Toast.makeText(getActivity().getApplicationContext(),"File Deleted",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "File Deleted", Toast.LENGTH_SHORT).show();
+                        bar.setProgress(0);
                         deleteFile();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
-                        Toast.makeText(getActivity().getApplicationContext(),"File Saved", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "File Saved", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -237,11 +283,15 @@ public class RecordFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
+                        bar.setProgress(0);
                         Toast.makeText(getActivity().getApplicationContext(), "File Uploaded", Toast.LENGTH_SHORT).show();
                         try {
-                            toZip();
+                            Log.i("teest", "ggg");
+                            uploadFile();
                         } catch (IOException e) {
                             e.printStackTrace();
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
                         }
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -259,7 +309,7 @@ public class RecordFragment extends Fragment {
     //파일 삭제
     private void deleteFile() {
         File file = new File(OUTPUT_FILE);
-        if(file.exists()){
+        if (file.exists()) {
             file.delete();
         }
     }
@@ -269,16 +319,15 @@ public class RecordFragment extends Fragment {
         progressState = false;
         if (recorder != null && isRecording) {
             if (recordTimer.getTimeRemain() > 165) {
-                Toast.makeText(getActivity().getApplicationContext(), "Min 15 sec", Toast.LENGTH_SHORT).show();
+                new AlertDialog.Builder(getActivity()).setMessage("15초 이상 녹음").setNeutralButton("Ok", null).show();
                 recorder.stop();
-
                 recordTimer.cancel();
+                bar.setProgress(0);
                 deleteFile();
                 isRecording = false;
             } else {
-                Toast.makeText(getActivity().getApplicationContext(), "Record Done" , Toast.LENGTH_SHORT).show();
+                new AlertDialog.Builder(getActivity()).setMessage("녹음 완료").setNeutralButton("Ok", null).show();
                 recorder.stop();
-
                 recordTimer.cancel();
                 isRecording = false;
             }
@@ -312,7 +361,7 @@ public class RecordFragment extends Fragment {
     }
 
     //오디오 파일 압축
-    private void toZip() throws IOException {
+    private void uploadFile() throws IOException, JSONException {
 
         byte[] buffer = new byte[2048];
         try {
@@ -329,14 +378,83 @@ public class RecordFragment extends Fragment {
 
             inputStream.close();
             zipFile.closeEntry();
-            zipFile.close();
+            zipFile.close();        // 오디오 파일 ZIP으로 압축
 
-            String encodedFile = Base64.encodeToString(buffer, Base64.DEFAULT);
+            File zip = new File(audioZip);
+            byte[] zipBuff = org.apache.commons.io.FileUtils.readFileToByteArray(zip);
 
+
+            encodedFile = Base64.encodeToString(zipBuff, Base64.DEFAULT);        // zip 파일 인코딩
+
+            // {"_req_data":[{"rec_file":"음성파일 zip으로 압축 후 base64로 인코딩된 값"}],"_req_svc":"UD0001"}
+            JSONObject recordObject = new JSONObject();
+            JSONObject dataObject = new JSONObject();
+            JSONArray jsonArray = new JSONArray();
+            recordObject.put("rec_file", encodedFile);
+            jsonArray.put(recordObject);
+            dataObject.put("_req_data", jsonArray);
+            dataObject.put("_req_svc", UD0001);
+
+
+            // JSON - toString
+            String dataString = dataObject.toString();
+
+
+            DefaultHttpClient client = new DefaultHttpClient();
+            try {
+                //android 3.0 부터는 네트워크작업을 UI쓰레드가 아닌 별도의 쓰레드로 돌려야해서
+                if (android.os.Build.VERSION.SDK_INT > 9) {
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+
+                    //Param 설정
+                    ArrayList<NameValuePair> paramList = new ArrayList<NameValuePair>();
+                    paramList.add(new BasicNameValuePair("JSONData", dataString));
+                    //Toast.makeText(getActivity().getApplicationContext(), paramList.toString(), Toast.LENGTH_SHORT).show();
+                    //연결지연시
+                    HttpParams params = new BasicHttpParams();
+                    HttpConnectionParams.setConnectionTimeout(params, 3000);
+                    HttpConnectionParams.setSoTimeout(params, 3000);
+                    //Json 데이터를 서버로 전송
+                    HttpPost httpPost = new HttpPost(url);
+                    httpPost.setEntity(new UrlEncodedFormEntity(paramList, "UTF-8"));
+                    // httpPost.setHeader("Accept", "application/json");
+                    // httpPost.setHeader("Content-type", "application/json");
+                    //데이터보낸 뒤 서버에서 데이터를 받아오는 과정
+                    ResponseHandler<String> reshand = new BasicResponseHandler();
+
+                    String strResponseBody = client.execute(httpPost, reshand);
+
+                    HttpResponse response = client.execute(httpPost);
+                    BufferedReader bufferReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "utf-8"));
+                    String line = null;
+                    String result = "";
+
+                    while ((line = bufferReader.readLine()) != null) {
+                        result += line;
+
+                    }
+                }  else {
+
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+                client.getConnectionManager().shutdown(); // 연결 지연 종료
+            }
+
+            StringEntity stringEntity = new StringEntity(recordObject.toString());
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+ //if문(android version)
     }
 
 
@@ -374,9 +492,5 @@ public class RecordFragment extends Fragment {
             bar.incrementProgressBy(1);
             super.handleMessage(msg);
         }
-
     }
-
-
-
 }
