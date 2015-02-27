@@ -6,11 +6,45 @@
     android:layout_height="match_parent"
     android:background="@drawable/home">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="로그인임시"
-        android:id="@+id/button2"
-        android:layout_gravity="right" />
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/countView"
+            android:layout_marginRight="95dp"
+            android:layout_marginEnd="95dp"
+            android:layout_marginTop="151dp"
+            android:text="오늘의 사연 갯수는 ? "
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textSize="5.5pt"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="오늘 방송까지"
+            android:id="@+id/textView"
+            android:layout_below="@+id/countView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="185dp"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/remainTime"
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="22dp"
+            android:textColor="@color/white" />
+    </RelativeLayout>
 </LinearLayout>

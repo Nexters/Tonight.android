@@ -4,9 +4,11 @@ package com.teamnexters.tonight;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
@@ -15,20 +17,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.BasicHttpEntity;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -53,8 +57,15 @@ public class HomeFragment extends Fragment {
     private static String strJSONInput;
     private static String strJSONOutput;
 
+    private TextView countView;
+
+    private String res_cnt = null;
+    private int _res_remain_hour;
+    private String usr_pushid;
     private Button btnOnAir;
     private Button button2;
+
+    private Typeface typeface;
 
     String usr_uuid = null;
     String alarmyn = "Y";
@@ -84,13 +95,88 @@ public class HomeFragment extends Fragment {
         if (getArguments() != null) {
             mParam = getArguments().getString(ARG_PARAM);
         }
+
+        usr_uuid = GetDevicesUUID(getActivity().getBaseContext());
+        usr_pushid = GCMRegistrar.getRegistrationId(getActivity().getBaseContext());
+
+        JSONObject jObject = new JSONObject();
+        JSONArray jArray = new JSONArray();
+        JSONObject sObject = new JSONObject();//jArray 내에 들어갈 json
+
+        try
+        {
+            sObject.put("alarmyn", alarmyn);
+            sObject.put("usr_pushid", "임시값dkfkejkf");
+            sObject.put("usr_uuid", usr_uuid);
+            jArray.put(sObject);
+            jObject.put("_req_data", jArray);//배열을 넣음
+            jObject.put("_req_svc", LG0001);
+
+            //원하는 json데이터 값 : jstring
+            String jstring = jObject.toString();
+            Log.i(MSG,"json :" + jstring);
+            RequestParams paramList = new RequestParams("JSONData", jstring);
+            //async library 사용
+            AsyncHttpClient mClient = new AsyncHttpClient();
+            mClient.post(getActivity(),url,paramList, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        //데이터보낸 뒤 서버에서 데이터를 받아오는 과정
+                        String _res_svc = null;//_res_svc
+                        //로그인세션처리해야함
+                        _res_svc = response.getString("_res_svc");
+                        if(_res_svc.equals("ERROR")){
+
+                        } else {
+                            JSONArray _res_data = null;//_res_data
+                            _res_data = response.getJSONArray("_res_data");
+                            JSONObject _res_result = (JSONObject) _res_data.get(0);
+                            String _res_is_next_brdcast = (String) _res_result.get("is_next_brdcast");//방송등록여부
+                            if(_res_is_next_brdcast.equalsIgnoreCase("y")){ //다음방송 있음. 시간/사연 정보 받기 가능
+
+                                String _res_date = (String) _res_result.get("date");//날짜
+                                _res_remain_hour = (int) _res_result.get("remain_hour");//남은hour
+                                int _res_remain_min = (int) _res_result.get("remain_min");//남은minute
+                                int _res_remain_second = (int) _res_result.get("remain_second");//남은second
+                                //방송등록여부 미리체크하기.(구현해야함)
+                                res_cnt = (String) _res_result.get("res_cnt");//사연갯수
+                                countView.setText("오늘 온 사연 " + res_cnt + "개");
+                                String res_login_yn = (String) _res_result.get("_login_yn");//로그인여부
+                                System.out.println("#############"+_res_svc+"@@@@@@@"+_res_is_next_brdcast+_res_date+res_cnt+res_login_yn);
+                                String time1 = String.valueOf(_res_remain_hour);
+                                String time2 = String.valueOf(_res_remain_min);
+                                String time3 = String.valueOf(_res_remain_second);
+                                System.out.println(time1+time2+time3);
+
+                            } else { // 불가능
+
+                            }
+
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                }
+            });
+
+        }
+        catch (JSONException e)
+        {e.printStackTrace();}
         //서버와의 연결 체크
         if(isConnected()) {
             Log.d(MSG, "서버와 연결되었습니다");
-            Toast.makeText(getActivity().getApplicationContext(), "서버와 연결되었습니다", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity().getApplicationContext(), "서버와 연결되었습니다", Toast.LENGTH_SHORT).show();
         }else{
             Log.d(MSG, "서버와 연결되지 않았습니다");
-            Toast.makeText(getActivity().getApplicationContext(), "서버와 연결되지 않았습니다", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity().getApplicationContext(), "서버와 연결되지 않았습니다", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -99,187 +185,103 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        btnOnAir = (Button) view.findViewById(R.id.btn_on_air);
-
-        /**
-         * 임시용!!!! UUID,PUSHID를 JSON으로 서버에 데이터보내기.
-         */
-        /*
-        button2 = (Button) view.findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //기계 UUID 가져옴
-                usr_uuid = GetDevicesUUID(getActivity().getBaseContext());
-                Log.i(MSG,"기기UUID값 :" + usr_uuid);
-                Toast.makeText(getActivity().getApplicationContext(), usr_uuid, Toast.LENGTH_SHORT).show();
-                //push id
-                String usr_pushid;
-                usr_pushid = GCMRegistrar.getRegistrationId(getActivity().getBaseContext());
-                Log.i(MSG,"pushID :" + usr_pushid);
-                Toast.makeText(getActivity().getApplicationContext(), usr_pushid, Toast.LENGTH_SHORT).show();
-
-                JSONObject jObject = new JSONObject();
-                JSONArray jArray = new JSONArray();
-                JSONObject sObject = new JSONObject();//jArray 내에 들어갈 json
-                try
-                {
-                    sObject.put("alarmyn", alarmyn);
-                    sObject.put("usr_pushid", "임시값dkfkejkf");
-                    sObject.put("usr_uuid", usr_uuid);
-                    jArray.put(sObject);
-                    jObject.put("_req_data", jArray);//배열을
-                    jObject.put("_req_svc", LG0001);
-                }
-                catch (JSONException e)
-                {e.printStackTrace();}
-
-                //원하는 json데이터 값 : jstring
-                String jstring = jObject.toString();
-                Log.i(MSG,"json :" + jstring);
-                Toast.makeText(getActivity().getApplicationContext(), jstring, Toast.LENGTH_SHORT).show();
-
-                DefaultHttpClient client = new DefaultHttpClient();
-                try {
-                    //android 3.0 부터는 네트워크작업을 UI쓰레드가 아닌 별도의 쓰레드로 돌려야해서
-                    if(android.os.Build.VERSION.SDK_INT > 9) {
-                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                        StrictMode.setThreadPolicy(policy);
-
-                        //연결지연시
-                        HttpParams params = client.getParams();
-                        HttpConnectionParams.setConnectionTimeout(params, 3000);
-                        HttpConnectionParams.setSoTimeout(params, 3000);
-                        //Json 데이터를 서버로 전송
-                        HttpPost httpPost = new HttpPost(url);
-                        httpPost.setEntity(new StringEntity(jstring));
-                        httpPost.setHeader("Accept", "application/json");
-                        httpPost.setHeader("Content-type", "application/json");
-                        //데이터보낸 뒤 서버에서 데이터를 받아오는 과정
-                        HttpResponse response = client.execute(httpPost);
-                        BufferedReader bufferReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "utf-8"));
-                        String line = null;
-                        String result = "";
-
-                        while ((line = bufferReader.readLine()) != null) {
-                            result += line;
-                            Log.i(MSG, result);
-                        }
-                    } //if문(android version)
-                    else{
-                        Log.i(MSG, "android version이 3.0 이하");
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                } catch (ClientProtocolException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    client.getConnectionManager().shutdown(); // 연결 지연 종료
-                }
-
-
-            }
-        });
-*/
-        /*
-         * 임시용!!!! UUID,PUSHID를 JSON으로 서버에 데이터보내기.
-         */
-        button2 = (Button) view.findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //기계 UUID 가져옴
-                usr_uuid = GetDevicesUUID(getActivity().getBaseContext());
-                Log.i(MSG,"기기UUID값 :" + usr_uuid);
-                Toast.makeText(getActivity().getApplicationContext(), usr_uuid, Toast.LENGTH_SHORT).show();
-                //push id
-                String usr_pushid;
-                usr_pushid = GCMRegistrar.getRegistrationId(getActivity().getBaseContext());
-                Log.i(MSG,"pushID :" + usr_pushid);
-                Toast.makeText(getActivity().getApplicationContext(), usr_pushid, Toast.LENGTH_SHORT).show();
-
-                JSONObject jObject = new JSONObject();
-                JSONArray jArray = new JSONArray();
-                JSONObject sObject = new JSONObject();//jArray 내에 들어갈 json
-                try
-                {
-                    sObject.put("alarmyn", alarmyn);
-                    sObject.put("usr_pushid", "임시값dkfkejkf");
-                    sObject.put("usr_uuid", usr_uuid);
-                    sObject.put("usr_nn","Kyuri IM");
-                    jArray.put(sObject);
-                    jObject.put("_req_data", jArray);//배열을 넣음
-                    jObject.put("_req_svc", LG0001);
-                }
-                catch (JSONException e)
-                {e.printStackTrace();}
-
-                //원하는 json데이터 값 : jstring
-                String jstring = jObject.toString();
-                Log.i(MSG,"json :" + jstring);
-                Toast.makeText(getActivity().getApplicationContext(), jstring, Toast.LENGTH_SHORT).show();
-
-                DefaultHttpClient client = new DefaultHttpClient();
-                try {
-                    //android 3.0 부터는 네트워크작업을 UI쓰레드가 아닌 별도의 쓰레드로 돌려야해서
-                    if(android.os.Build.VERSION.SDK_INT > 9) {
-                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                        StrictMode.setThreadPolicy(policy);
-
-                        //Param 설정
-                        ArrayList<NameValuePair> paramList = new ArrayList<NameValuePair>();
-                        paramList.add(new BasicNameValuePair("JSONData", jstring));
-                        //Toast.makeText(getActivity().getApplicationContext(), paramList.toString(), Toast.LENGTH_SHORT).show();
-                        //연결지연시
-                        HttpParams params = new BasicHttpParams();
-                        HttpConnectionParams.setConnectionTimeout(params, 3000);
-                        HttpConnectionParams.setSoTimeout(params, 3000);
-                        //Json 데이터를 서버로 전송
-                        HttpPost httpPost = new HttpPost(url);
-                        httpPost.setEntity(new UrlEncodedFormEntity(paramList, "UTF-8"));
-                       // httpPost.setHeader("Accept", "application/json");
-                       // httpPost.setHeader("Content-type", "application/json");
-                        //데이터보낸 뒤 서버에서 데이터를 받아오는 과정
-                        ResponseHandler<String> reshand = new BasicResponseHandler();
-
-                        String strResponseBody = client.execute(httpPost,reshand);
-
-                        strJSONInput = strResponseBody.trim();
-                        strJSONOutput = null;
-
-                        HttpResponse response = client.execute(httpPost);
-                        BufferedReader bufferReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "utf-8"));
-                        String line = null;
-                        String result = "";
-
-                        while ((line = bufferReader.readLine()) != null) {
-                            result += line;
-                            Log.i(MSG, result);
-                        }
-                    } //if문(android version)
-                    else{
-                        Log.i(MSG, "android version이 3.0 이하");
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                } catch (ClientProtocolException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    client.getConnectionManager().shutdown(); // 연결 지연 종료
-                }
-
-
-            }
-        });
+        countView = (TextView) view.findViewById(R.id.countView);
+        try {
+            getData();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        setFont();
         return view;
     }
 
+    private void setFont() {
+        typeface = Typeface.createFromAsset(getActivity().getAssets(), "font/NotoSansCJKkr-Regular.otf");
+        countView.setTypeface(typeface);
 
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        try {
+            getData();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getData() throws JSONException {
+
+        JSONObject jObject = new JSONObject();
+        JSONArray jArray = new JSONArray();
+        JSONObject sObject = new JSONObject();//jArray 내에 들어갈 json
+
+        try {
+            sObject.put("alarmyn", alarmyn);
+            sObject.put("usr_pushid", "임시값dkfkejkf");
+            sObject.put("usr_uuid", usr_uuid);
+            jArray.put(sObject);
+            jObject.put("_req_data", jArray);//배열을 넣음
+            jObject.put("_req_svc", LG0001);
+
+            //원하는 json데이터 값 : jstring
+            String jstring = jObject.toString();
+            Log.i(MSG, "json :" + jstring);
+            RequestParams paramList = new RequestParams("JSONData", jstring);
+            //async library 사용
+            AsyncHttpClient mClient = new AsyncHttpClient();
+            mClient.post(getActivity(), url, paramList, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        //데이터보낸 뒤 서버에서 데이터를 받아오는 과정
+                        String _res_svc = null;//_res_svc
+                        //로그인세션처리해야함
+                        _res_svc = response.getString("_res_svc");
+                        if (_res_svc.equals("ERROR")) {
+
+                        } else {
+                            JSONArray _res_data = null;//_res_data
+                            _res_data = response.getJSONArray("_res_data");
+                            JSONObject _res_result = (JSONObject) _res_data.get(0);
+                            String _res_is_next_brdcast = (String) _res_result.get("is_next_brdcast");//방송등록여부
+                            if (_res_is_next_brdcast.equalsIgnoreCase("y")) { //다음방송 있음. 시간/사연 정보 받기 가능
+
+                                String _res_date = (String) _res_result.get("date");//날짜
+                                int _res_remain_hour = (int) _res_result.get("remain_hour");//남은hour
+                                int _res_remain_min = (int) _res_result.get("remain_min");//남은minute
+                                int _res_remain_second = (int) _res_result.get("remain_second");//남은second
+                                //방송등록여부 미리체크하기.(구현해야함)
+                                res_cnt = (String) _res_result.get("res_cnt");//사연갯수
+                                countView.setText("오늘 온 사연 " + res_cnt + "개");
+                                String res_login_yn = (String) _res_result.get("_login_yn");//로그인여부
+                                System.out.println("#############" + _res_svc + "@@@@@@@" + _res_is_next_brdcast + _res_date + res_cnt + res_login_yn);
+                                String time1 = String.valueOf(_res_remain_hour);
+                                String time2 = String.valueOf(_res_remain_min);
+                                String time3 = String.valueOf(_res_remain_second);
+                                System.out.println(time1 + time2 + time3);
+
+                            } else { // 불가능
+
+                            }
+
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     //서버와의 연결여부
-    public boolean isConnected(){
+
+    public boolean isConnected() {
         ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Activity.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected())
@@ -288,12 +290,31 @@ public class HomeFragment extends Fragment {
             return false;
     }
 
+
     //UUID값 가져오기
     private String GetDevicesUUID(Context mContext) {
         TelephonyManager tManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
         String deviceId = tManager.getDeviceId();
         return deviceId;
     }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser) {
+            try {
+                getData();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }else{
+
+            //사용자가 보지 않았을 시
+        }
+
+    }
+
 
     //서버로 request
     //지금은 요청만 보내면되니깐 메소드생략
@@ -357,5 +378,32 @@ public class HomeFragment extends Fragment {
         }
     }
 
+ /*   public class RecordTimer extends CountDownTimer {
+        private long timeRemain;
+
+        public RecordTimer(long startTime, long interval) {
+            super(startTime, interval);
+            timeRemain = 0;
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            tvTimer.setText(timeFormat.format(millisUntilFinished));
+            timeRemain = millisUntilFinished / 1000;
+
+        }
+
+        @Override
+        public void onFinish() {
+            tvTimer.setText(timeFormat.format(0));
+        }
+
+        public long getTimeRemain() {
+            return timeRemain;
+        }
+
+
+    }
+    */
 
 }

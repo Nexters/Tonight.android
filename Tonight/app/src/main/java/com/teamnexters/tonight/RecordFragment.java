@@ -151,20 +151,18 @@ public class RecordFragment extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_start:
+                    btnStart.setEnabled(false);
                     try {
-                        if (isRecording && OUTPUT_FILE != null) {
-                            new AlertDialog.Builder(getActivity()).setMessage("Record Active").setNeutralButton("Exit", null).show();
-                        } else {
                             startRecording();
-                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
                 case R.id.btn_play:
                     try {
-                        if ( player.isPlaying()) {
+                        if ( player.isPlaying() && OUTPUT_FILE != null) {
                             stopPlaying();
+                            btnPlay.setBackground(getResources().getDrawable(R.drawable.record));
                         } else {
                             btnPlay.setBackground(getResources().getDrawable(R.drawable.pause));
                             playRecording();
@@ -181,6 +179,7 @@ public class RecordFragment extends Fragment {
 
                 case R.id.done:
                     stopRecording();
+                    btnStart.setEnabled(true);
                     btnDone.setVisibility(View.INVISIBLE);
                     btnPlay.setVisibility(View.VISIBLE);
                     btnCancel.setVisibility(View.VISIBLE);
@@ -263,6 +262,10 @@ public class RecordFragment extends Fragment {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         Toast.makeText(getActivity().getApplicationContext(), "File Deleted", Toast.LENGTH_SHORT).show();
+                        btnDone.setVisibility(View.VISIBLE);
+                        btnUpload.setVisibility(View.INVISIBLE);
+                        btnCancel.setVisibility(View.INVISIBLE);
+                        btnPlay.setVisibility(View.INVISIBLE);
                         bar.setProgress(0);
                         deleteFile();
                         break;
@@ -286,7 +289,6 @@ public class RecordFragment extends Fragment {
                         bar.setProgress(0);
                         Toast.makeText(getActivity().getApplicationContext(), "File Uploaded", Toast.LENGTH_SHORT).show();
                         try {
-                            Log.i("teest", "ggg");
                             uploadFile();
                         } catch (IOException e) {
                             e.printStackTrace();
