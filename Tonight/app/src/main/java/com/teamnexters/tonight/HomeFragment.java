@@ -42,11 +42,14 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.Iterator;
 
 public class HomeFragment extends Fragment {
@@ -58,14 +61,23 @@ public class HomeFragment extends Fragment {
     private static String strJSONOutput;
 
     private TextView countView;
+    private TextView textView;
 
     private String res_cnt = null;
     private int _res_remain_hour;
+    private int _res_remain_min;
+    private int _res_remain_second;
+    private long seconds = 0;
     private String usr_pushid;
     private Button btnOnAir;
     private Button button2;
 
+    private TextView remainTime;
     private Typeface typeface;
+
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    private BroadTimer broadTimer;
+
 
     String usr_uuid = null;
     String alarmyn = "Y";
@@ -137,8 +149,11 @@ public class HomeFragment extends Fragment {
 
                                 String _res_date = (String) _res_result.get("date");//날짜
                                 _res_remain_hour = (int) _res_result.get("remain_hour");//남은hour
-                                int _res_remain_min = (int) _res_result.get("remain_min");//남은minute
-                                int _res_remain_second = (int) _res_result.get("remain_second");//남은second
+                                _res_remain_min = (int) _res_result.get("remain_min");//남은minute
+                                _res_remain_second = (int) _res_result.get("remain_second");//남은second
+                                seconds = _res_remain_hour * 3600000 + _res_remain_min * 60000 + ( _res_remain_second*1000);
+                                broadTimer = new BroadTimer(seconds, 1000);
+                                broadTimer.start();
                                 //방송등록여부 미리체크하기.(구현해야함)
                                 res_cnt = (String) _res_result.get("res_cnt");//사연갯수
                                 countView.setText("오늘 온 사연 " + res_cnt + "개");
@@ -186,6 +201,9 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         countView = (TextView) view.findViewById(R.id.countView);
+        textView = (TextView) view.findViewById(R.id.textView);
+        remainTime = (TextView) view.findViewById(R.id.remainTime);
+
         try {
             getData();
         } catch (JSONException e) {
@@ -198,6 +216,9 @@ public class HomeFragment extends Fragment {
     private void setFont() {
         typeface = Typeface.createFromAsset(getActivity().getAssets(), "font/NotoSansCJKkr-Regular.otf");
         countView.setTypeface(typeface);
+        textView.setTypeface(typeface);
+        remainTime.setTypeface(typeface);
+
 
     }
 
@@ -248,19 +269,10 @@ public class HomeFragment extends Fragment {
                             String _res_is_next_brdcast = (String) _res_result.get("is_next_brdcast");//방송등록여부
                             if (_res_is_next_brdcast.equalsIgnoreCase("y")) { //다음방송 있음. 시간/사연 정보 받기 가능
 
-                                String _res_date = (String) _res_result.get("date");//날짜
-                                int _res_remain_hour = (int) _res_result.get("remain_hour");//남은hour
-                                int _res_remain_min = (int) _res_result.get("remain_min");//남은minute
-                                int _res_remain_second = (int) _res_result.get("remain_second");//남은second
-                                //방송등록여부 미리체크하기.(구현해야함)
+
                                 res_cnt = (String) _res_result.get("res_cnt");//사연갯수
                                 countView.setText("오늘 온 사연 " + res_cnt + "개");
                                 String res_login_yn = (String) _res_result.get("_login_yn");//로그인여부
-                                System.out.println("#############" + _res_svc + "@@@@@@@" + _res_is_next_brdcast + _res_date + res_cnt + res_login_yn);
-                                String time1 = String.valueOf(_res_remain_hour);
-                                String time2 = String.valueOf(_res_remain_min);
-                                String time3 = String.valueOf(_res_remain_second);
-                                System.out.println(time1 + time2 + time3);
 
                             } else { // 불가능
 
@@ -378,32 +390,31 @@ public class HomeFragment extends Fragment {
         }
     }
 
- /*   public class RecordTimer extends CountDownTimer {
-        private long timeRemain;
+    public class BroadTimer extends CountDownTimer {
 
-        public RecordTimer(long startTime, long interval) {
+        int hour;
+        int min;
+        int sec;
+        public BroadTimer (long startTime, long interval) {
             super(startTime, interval);
-            timeRemain = 0;
+
         }
 
         @Override
         public void onTick(long millisUntilFinished) {
-            tvTimer.setText(timeFormat.format(millisUntilFinished));
-            timeRemain = millisUntilFinished / 1000;
-
+            Date t_d = new Date(millisUntilFinished);
+            hour = (int) ((millisUntilFinished / (3600*1000) ) % 24 );
+            min = (int ) (millisUntilFinished / (60 * 1000)) % 60 ;
+            sec = (int) (millisUntilFinished / 1000) % 60;
+            remainTime.setText(hour+":"+min+":"+sec);
+            //remainTime.setText(timeFormat.format(t_d.getTime()));
         }
 
         @Override
         public void onFinish() {
-            tvTimer.setText(timeFormat.format(0));
+            remainTime.setText("방송중입니다!");
         }
-
-        public long getTimeRemain() {
-            return timeRemain;
-        }
-
 
     }
-    */
 
 }

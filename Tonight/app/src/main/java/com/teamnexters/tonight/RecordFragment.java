@@ -369,7 +369,7 @@ public class RecordFragment extends Fragment {
         try {
             String audioZip = Environment.getExternalStorageDirectory() + "/audio.zip";
             ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(audioZip));
-            ZipEntry zipEntry = new ZipEntry(OUTPUT_FILE);
+            ZipEntry zipEntry = new ZipEntry("audiorecorder.wav");
             zipFile.putNextEntry(zipEntry);
             FileInputStream inputStream = new FileInputStream(OUTPUT_FILE);
 
@@ -447,9 +447,6 @@ public class RecordFragment extends Fragment {
                 e.printStackTrace();
                 client.getConnectionManager().shutdown(); // 연결 지연 종료
             }
-
-            StringEntity stringEntity = new StringEntity(recordObject.toString());
-
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

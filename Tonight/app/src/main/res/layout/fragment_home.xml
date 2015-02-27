@@ -35,7 +35,8 @@
             android:layout_below="@+id/countView"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="185dp"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="11pt" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -44,7 +45,8 @@
             android:id="@+id/remainTime"
             android:layout_below="@+id/textView"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="22dp"
-            android:textColor="@color/white" />
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:textSize="11pt" />
     </RelativeLayout>
 </LinearLayout>
