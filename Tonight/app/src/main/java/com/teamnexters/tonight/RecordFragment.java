@@ -160,12 +160,13 @@ public class RecordFragment extends Fragment {
                     break;
                 case R.id.btn_play:
                     try {
-                        if ( player.isPlaying() && OUTPUT_FILE != null) {
+                        if ( player.isPlaying() && OUTPUT_FILE != null ) {
                             stopPlaying();
                             btnPlay.setBackground(getResources().getDrawable(R.drawable.record));
                         } else {
                             btnPlay.setBackground(getResources().getDrawable(R.drawable.pause));
                             playRecording();
+
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -187,13 +188,9 @@ public class RecordFragment extends Fragment {
                     break;
 
                 case R.id.upload:
-                    if (OUTPUT_FILE == null) {
-                        new AlertDialog.Builder(getActivity()).setMessage("사연을 녹음해주세요").setNeutralButton("Okay", null).show();
-                    } else if (OUTPUT_FILE != null) {
-                        showUploadDialog(getActivity());
-                        stopPlaying();
+                    showUploadDialog(getActivity());
+                    stopPlaying();
 
-                    }
                     break;
             }
         }
@@ -286,6 +283,11 @@ public class RecordFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
+                        btnStart.setEnabled(true);
+                        btnDone.setVisibility(View.VISIBLE);
+                        btnPlay.setVisibility(View.INVISIBLE);
+                        btnCancel.setVisibility(View.INVISIBLE);
+                        btnUpload.setVisibility(View.INVISIBLE);
                         bar.setProgress(0);
                         Toast.makeText(getActivity().getApplicationContext(), "File Uploaded", Toast.LENGTH_SHORT).show();
                         try {
@@ -321,14 +323,14 @@ public class RecordFragment extends Fragment {
         progressState = false;
         if (recorder != null && isRecording) {
             if (recordTimer.getTimeRemain() > 165) {
-                new AlertDialog.Builder(getActivity()).setMessage("15초 이상 녹음").setNeutralButton("Ok", null).show();
+                new AlertDialog.Builder(getActivity()).setMessage("15초 이상 녹음해주세요!").setNeutralButton("Ok", null).show();
                 recorder.stop();
                 recordTimer.cancel();
                 bar.setProgress(0);
                 deleteFile();
                 isRecording = false;
             } else {
-                new AlertDialog.Builder(getActivity()).setMessage("녹음 완료").setNeutralButton("Ok", null).show();
+                new AlertDialog.Builder(getActivity()).setMessage("녹음이 완료되었습니다").setNeutralButton("Ok", null).show();
                 recorder.stop();
                 recordTimer.cancel();
                 isRecording = false;
