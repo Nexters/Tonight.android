@@ -151,22 +151,23 @@ public class RecordFragment extends Fragment {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btn_start:
+                    btnDone.setVisibility(View.VISIBLE);
                     btnStart.setEnabled(false);
                     try {
                             startRecording();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
                     break;
                 case R.id.btn_play:
                     try {
-                        if ( player.isPlaying() && OUTPUT_FILE != null ) {
+                        if ( player.isPlaying() ) {
                             stopPlaying();
                             btnPlay.setBackground(getResources().getDrawable(R.drawable.record));
                         } else {
                             btnPlay.setBackground(getResources().getDrawable(R.drawable.pause));
                             playRecording();
-
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -181,10 +182,6 @@ public class RecordFragment extends Fragment {
                 case R.id.done:
                     stopRecording();
                     btnStart.setEnabled(true);
-                    btnDone.setVisibility(View.INVISIBLE);
-                    btnPlay.setVisibility(View.VISIBLE);
-                    btnCancel.setVisibility(View.VISIBLE);
-                    btnUpload.setVisibility(View.VISIBLE);
                     break;
 
                 case R.id.upload:
@@ -259,7 +256,6 @@ public class RecordFragment extends Fragment {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
                         Toast.makeText(getActivity().getApplicationContext(), "File Deleted", Toast.LENGTH_SHORT).show();
-                        btnDone.setVisibility(View.VISIBLE);
                         btnUpload.setVisibility(View.INVISIBLE);
                         btnCancel.setVisibility(View.INVISIBLE);
                         btnPlay.setVisibility(View.INVISIBLE);
@@ -328,12 +324,17 @@ public class RecordFragment extends Fragment {
                 recordTimer.cancel();
                 bar.setProgress(0);
                 deleteFile();
+                btnDone.setVisibility(View.INVISIBLE);
                 isRecording = false;
             } else {
                 new AlertDialog.Builder(getActivity()).setMessage("녹음이 완료되었습니다").setNeutralButton("Ok", null).show();
                 recorder.stop();
                 recordTimer.cancel();
                 isRecording = false;
+                btnDone.setVisibility(View.INVISIBLE);
+                btnPlay.setVisibility(View.VISIBLE);
+                btnCancel.setVisibility(View.VISIBLE);
+                btnUpload.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -345,6 +346,8 @@ public class RecordFragment extends Fragment {
         player.setDataSource(OUTPUT_FILE);
         player.prepare();
         player.start();
+
+
     }
 
     private void ditchMediaPlayer() {

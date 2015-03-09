@@ -71,7 +71,8 @@
             android:id="@+id/done"
             android:background="@drawable/done"
             android:layout_marginTop="25dp"
-            android:layout_marginLeft="55dp"/>
+            android:layout_marginLeft="55dp"
+            android:visibility="invisible" />
 
         <ImageButton
             android:layout_width="wrap_content"
