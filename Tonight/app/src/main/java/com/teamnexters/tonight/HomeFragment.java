@@ -164,8 +164,8 @@ public class HomeFragment extends Fragment {
                                 String time3 = String.valueOf(_res_remain_second);
                                 System.out.println(time1+time2+time3);
 
-                            } else { // 불가능
-
+                            } else if (_res_is_next_brdcast.equalsIgnoreCase("n")) {
+                                textView.setText(R.string.broadNo);
                             }
 
                         }
@@ -274,8 +274,8 @@ public class HomeFragment extends Fragment {
                                 countView.setText("오늘 온 사연 " + res_cnt + "개");
                                 String res_login_yn = (String) _res_result.get("_login_yn");//로그인여부
 
-                            } else { // 불가능
-
+                            } else if (_res_is_next_brdcast.equalsIgnoreCase("n")) {
+                                textView.setText(R.string.broadNo);
                             }
 
                         }

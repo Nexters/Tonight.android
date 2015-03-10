@@ -30,13 +30,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="오늘 방송까지"
+            android:text="@string/broadYes"
             android:id="@+id/textView"
-            android:layout_below="@+id/countView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="185dp"
+            android:layout_marginTop="182dp"
             android:textColor="@color/white"
-            android:textSize="11pt" />
+            android:textSize="9.5pt"
+            android:layout_below="@+id/countView"
+            android:layout_centerHorizontal="true" />
 
         <TextView
             android:layout_width="wrap_content"

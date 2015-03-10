@@ -7,5 +7,7 @@
     <string name="title_activity_record">RecordActivity</string>
     <string name="title_activity_on_air">OnAirActivity</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="broadYes">오늘 방송까지</string>
+    <string name = "broadNo">사연이없어서\n방송을 못한다구!\n보내라구!</string>
 
 </resources>

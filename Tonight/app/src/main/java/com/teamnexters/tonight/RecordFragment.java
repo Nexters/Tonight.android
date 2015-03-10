@@ -425,12 +425,11 @@ public class RecordFragment extends Fragment {
                     //Json 데이터를 서버로 전송
                     HttpPost httpPost = new HttpPost(url);
                     httpPost.setEntity(new UrlEncodedFormEntity(paramList, "UTF-8"));
+
                     // httpPost.setHeader("Accept", "application/json");
                     // httpPost.setHeader("Content-type", "application/json");
                     //데이터보낸 뒤 서버에서 데이터를 받아오는 과정
                     ResponseHandler<String> reshand = new BasicResponseHandler();
-
-                    String strResponseBody = client.execute(httpPost, reshand);
 
                     HttpResponse response = client.execute(httpPost);
                     BufferedReader bufferReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "utf-8"));
