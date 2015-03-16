@@ -5,50 +5,35 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
+
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -62,6 +47,18 @@ public class HomeFragment extends Fragment {
 
     private TextView countView;
     private TextView textView;
+    private ImageView star1;
+    private ImageView star2;
+    private ImageView star3;
+    private ImageView star4;
+    private ImageView star5;
+    private ImageView star6;
+    private AnimationDrawable starAnimate1;
+    private AnimationDrawable starAnimate2;
+    private AnimationDrawable starAnimate3;
+    private AnimationDrawable starAnimate4;
+    private AnimationDrawable starAnimate5;
+    private AnimationDrawable starAnimate6;
 
     private String res_cnt = null;
     private int _res_remain_hour;
@@ -203,6 +200,18 @@ public class HomeFragment extends Fragment {
         countView = (TextView) view.findViewById(R.id.countView);
         textView = (TextView) view.findViewById(R.id.textView);
         remainTime = (TextView) view.findViewById(R.id.remainTime);
+        star1 = (ImageView) view.findViewById(R.id.star1);
+        star2 = (ImageView) view.findViewById(R.id.star2);
+        star3 = (ImageView) view.findViewById(R.id.star3);
+        star4 = (ImageView) view.findViewById(R.id.star4);
+        star5 = (ImageView) view.findViewById(R.id.star5);
+        star6 = (ImageView) view.findViewById(R.id.star6);
+        starAnimate1 = (AnimationDrawable) star1.getDrawable();
+        starAnimate2 = (AnimationDrawable) star2.getDrawable();
+        starAnimate3 = (AnimationDrawable) star3.getDrawable();
+        starAnimate4 = (AnimationDrawable) star4.getDrawable();
+        starAnimate5 = (AnimationDrawable) star5.getDrawable();
+        starAnimate6 = (AnimationDrawable) star6.getDrawable();
 
         try {
             getData();
@@ -210,8 +219,24 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
         setFont();
+        view.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    starAnimate1.start();
+                    starAnimate2.start();
+                    starAnimate3.start();
+                    starAnimate4.start();
+                    starAnimate5.start();
+                    starAnimate6.start();
+                }
+                return true;
+            }
+        });
         return view;
     }
+
 
     private void setFont() {
         typeface = Typeface.createFromAsset(getActivity().getAssets(), "font/NotoSansCJKkr-Regular.otf");
@@ -416,5 +441,6 @@ public class HomeFragment extends Fragment {
         }
 
     }
+
 
 }

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
@@ -48,5 +49,64 @@
             android:layout_marginTop="10dp"
             android:textColor="@color/white"
             android:textSize="11pt" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/star1"
+            android:background="@drawable/animate"
+            android:src = "@drawable/animate"
+            android:layout_alignRight="@+id/countView"
+            android:layout_alignEnd="@+id/countView"
+            android:layout_below="@+id/remainTime"
+            android:layout_toRightOf="@+id/textView"
+            android:layout_toEndOf="@+id/textView" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/star2"
+            android:src = "@drawable/animate"
+            android:layout_above="@+id/remainTime"
+            android:layout_alignRight="@+id/countView"
+            android:layout_alignEnd="@+id/countView" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/star3"
+            android:src = "@drawable/animate"
+            android:layout_alignBottom="@+id/textView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/star4"
+            android:src = "@drawable/animate"
+            android:layout_alignTop="@+id/star1"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/star5"
+            android:src = "@drawable/animate"
+            android:layout_below="@+id/star1"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/star6"
+            android:src = "@drawable/animate"
+            android:layout_alignBottom="@+id/countView"
+            android:layout_toLeftOf="@+id/remainTime"
+            android:layout_toStartOf="@+id/remainTime" />
+
     </RelativeLayout>
+
 </LinearLayout>
