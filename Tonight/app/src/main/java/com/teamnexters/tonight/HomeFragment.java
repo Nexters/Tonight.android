@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -66,8 +65,6 @@ public class HomeFragment extends Fragment {
     private int _res_remain_second;
     private long seconds = 0;
     private String usr_pushid;
-    private Button btnOnAir;
-    private Button button2;
 
     private TextView remainTime;
     private Typeface typeface;
@@ -200,7 +197,7 @@ public class HomeFragment extends Fragment {
         countView = (TextView) view.findViewById(R.id.countView);
         textView = (TextView) view.findViewById(R.id.textView);
         remainTime = (TextView) view.findViewById(R.id.remainTime);
-        star1 = (ImageView) view.findViewById(R.id.star1);
+        star1 = (ImageView) view.findViewById(R.id.imageView);
         star2 = (ImageView) view.findViewById(R.id.star2);
         star3 = (ImageView) view.findViewById(R.id.star3);
         star4 = (ImageView) view.findViewById(R.id.star4);
@@ -294,10 +291,15 @@ public class HomeFragment extends Fragment {
                             String _res_is_next_brdcast = (String) _res_result.get("is_next_brdcast");//방송등록여부
                             if (_res_is_next_brdcast.equalsIgnoreCase("y")) { //다음방송 있음. 시간/사연 정보 받기 가능
 
-
+                                String _res_date = (String) _res_result.get("date");//날짜
                                 res_cnt = (String) _res_result.get("res_cnt");//사연갯수
                                 countView.setText("오늘 온 사연 " + res_cnt + "개");
                                 String res_login_yn = (String) _res_result.get("_login_yn");//로그인여부
+                                System.out.println("#############"+_res_svc+"@@@@@@@"+_res_is_next_brdcast+_res_date+res_cnt+res_login_yn);
+                                String time1 = String.valueOf(_res_remain_hour);
+                                String time2 = String.valueOf(_res_remain_min);
+                                String time3 = String.valueOf(_res_remain_second);
+                                System.out.println(time1+time2+time3);
 
                             } else if (_res_is_next_brdcast.equalsIgnoreCase("n")) {
                                 textView.setText(R.string.broadNo);

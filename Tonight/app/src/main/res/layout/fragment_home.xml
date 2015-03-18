@@ -53,50 +53,52 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/star1"
+            android:id="@+id/imageView"
             android:background="@drawable/animate"
             android:src = "@drawable/animate"
-            android:layout_alignRight="@+id/countView"
-            android:layout_alignEnd="@+id/countView"
-            android:layout_below="@+id/remainTime"
-            android:layout_toRightOf="@+id/textView"
-            android:layout_toEndOf="@+id/textView" />
+            android:layout_alignTop="@+id/remainTime"
+            android:layout_alignLeft="@+id/remainTime"
+            android:layout_alignStart="@+id/remainTime" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/star2"
             android:src = "@drawable/animate"
-            android:layout_above="@+id/remainTime"
-            android:layout_alignRight="@+id/countView"
-            android:layout_alignEnd="@+id/countView" />
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/textView"
+            android:layout_toEndOf="@+id/textView"
+            android:layout_marginLeft="44dp"
+            android:layout_marginStart="44dp" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/star3"
             android:src = "@drawable/animate"
-            android:layout_alignBottom="@+id/textView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_above="@+id/star2"
+            android:layout_toLeftOf="@+id/textView"
+            android:layout_toStartOf="@+id/textView"
+            android:layout_marginRight="27dp"
+            android:layout_marginEnd="27dp" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/star4"
             android:src = "@drawable/animate"
-            android:layout_alignTop="@+id/star1"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_below="@+id/imageView"
+            android:layout_alignLeft="@+id/star3"
+            android:layout_alignStart="@+id/star3" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/star5"
             android:src = "@drawable/animate"
-            android:layout_below="@+id/star1"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_below="@+id/star4"
+            android:layout_alignLeft="@+id/star2"
+            android:layout_alignStart="@+id/star2" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -104,9 +106,14 @@
             android:id="@+id/star6"
             android:src = "@drawable/animate"
             android:layout_alignBottom="@+id/countView"
-            android:layout_toLeftOf="@+id/remainTime"
-            android:layout_toStartOf="@+id/remainTime" />
+            android:layout_toRightOf="@+id/star3"
+            android:layout_toEndOf="@+id/star3" />
 
     </RelativeLayout>
+
+    <requestFocus
+        android:layout_gravity="right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
