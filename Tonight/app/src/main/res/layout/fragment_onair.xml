@@ -1,9 +1,47 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background">
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp">
+
+        <ListView
+            android:id="@+id/listview"
+            android:layout_height="300dp"
+            android:layout_width="match_parent"
+            android:divider="#ffcc22"
+            android:dividerHeight="1dp"
+            android:choiceMode="singleChoice"
+            android:layout_marginTop="150dp"
+            android:fastScrollEnabled="true"
+            android:layout_marginBottom="40dp"/>
+
+
+
+
+        <LinearLayout
+            android:id="@+id/ChatBar"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom">
+
+            <EditText
+                android:id="@+id/ChatBox"
+                android:layout_width="270dp"
+                android:layout_height="match_parent" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/ChatButton"
+                android:text="전송" />
+
+        </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

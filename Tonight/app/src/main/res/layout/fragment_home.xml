@@ -1,74 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/home">
+    android:background="@drawable/home"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
         <ImageView
+            android:id="@+id/stars"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/stars"
-            android:src = "@drawable/animate"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:focusableInTouchMode="true"
-            android:layout_toEndOf="@+id/remainTime"
             android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:adjustViewBounds="true" />
+            android:layout_toEndOf="@+id/remainTime"
+            android:adjustViewBounds="true"
+            android:focusableInTouchMode="true"
+            android:src="@drawable/animate" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/countView"
-            android:layout_marginRight="95dp"
-            android:layout_marginEnd="95dp"
-            android:layout_marginTop="151dp"
-            android:text="오늘의 사연 갯수는 ? "
-            android:singleLine="true"
-            android:textColor="@color/white"
-            android:textSize="5.5pt"
-            android:layout_alignParentTop="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="95dp"
+            android:layout_marginRight="95dp"
+            android:layout_marginTop="151dp"
+            android:singleLine="true"
+            android:text="오늘의 사연 갯수는 ? "
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/broadYes"
-            android:id="@+id/textView"
-            android:layout_marginTop="182dp"
             android:textColor="@color/white"
-            android:textSize="9.5pt"
-            android:layout_below="@+id/countView"
-            android:layout_centerHorizontal="true" />
+            android:textSize="5.5pt" />
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/countView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="182dp"
+            android:text="@string/broadYes"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/white"
+            android:textSize="9.5pt" />
+
+        <TextView
             android:id="@+id/remainTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/textView"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/white"
             android:textSize="11pt" />
 
     </RelativeLayout>
-
-    <requestFocus
-        android:layout_gravity="right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -41,9 +41,6 @@ public class HomeFragment extends Fragment {
     private static final String MSG = "HomeFragment";
     private String mParam;
 
-    private static String strJSONInput;
-    private static String strJSONOutput;
-
     private TextView countView;
     private TextView textView;
     private ImageView animatedStar;
