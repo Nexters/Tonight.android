@@ -46,19 +46,8 @@ public class HomeFragment extends Fragment {
 
     private TextView countView;
     private TextView textView;
-    private ImageView star1;
-    private ImageView star2;
-    private ImageView star3;
-    private ImageView star4;
-    private ImageView star5;
-    private ImageView star6;
+    private ImageView animatedStar;
     private AnimationDrawable starAnimate1;
-    private AnimationDrawable starAnimate2;
-    private AnimationDrawable starAnimate3;
-    private AnimationDrawable starAnimate4;
-    private AnimationDrawable starAnimate5;
-    private AnimationDrawable starAnimate6;
-
     private String res_cnt = null;
     private int _res_remain_hour;
     private int _res_remain_min;
@@ -109,8 +98,7 @@ public class HomeFragment extends Fragment {
         JSONArray jArray = new JSONArray();
         JSONObject sObject = new JSONObject();//jArray 내에 들어갈 json
 
-        try
-        {
+        try {
             sObject.put("alarmyn", alarmyn);
             sObject.put("usr_pushid", "임시값dkfkejkf");
             sObject.put("usr_uuid", usr_uuid);
@@ -120,11 +108,11 @@ public class HomeFragment extends Fragment {
 
             //원하는 json데이터 값 : jstring
             String jstring = jObject.toString();
-            Log.i(MSG,"json :" + jstring);
+            Log.i(MSG, "json :" + jstring);
             RequestParams paramList = new RequestParams("JSONData", jstring);
             //async library 사용
             AsyncHttpClient mClient = new AsyncHttpClient();
-            mClient.post(getActivity(),url,paramList, new JsonHttpResponseHandler(){
+            mClient.post(getActivity(), url, paramList, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     try {
@@ -132,34 +120,35 @@ public class HomeFragment extends Fragment {
                         String _res_svc = null;//_res_svc
                         //로그인세션처리해야함
                         _res_svc = response.getString("_res_svc");
-                        if(_res_svc.equals("ERROR")){
+                        if (_res_svc.equals("ERROR")) {
 
                         } else {
                             JSONArray _res_data = null;//_res_data
                             _res_data = response.getJSONArray("_res_data");
                             JSONObject _res_result = (JSONObject) _res_data.get(0);
                             String _res_is_next_brdcast = (String) _res_result.get("is_next_brdcast");//방송등록여부
-                            if(_res_is_next_brdcast.equalsIgnoreCase("y")){ //다음방송 있음. 시간/사연 정보 받기 가능
+                            if (_res_is_next_brdcast.equalsIgnoreCase("y")) { //다음방송 있음. 시간/사연 정보 받기 가능
 
                                 String _res_date = (String) _res_result.get("date");//날짜
                                 _res_remain_hour = (int) _res_result.get("remain_hour");//남은hour
                                 _res_remain_min = (int) _res_result.get("remain_min");//남은minute
                                 _res_remain_second = (int) _res_result.get("remain_second");//남은second
-                                seconds = _res_remain_hour * 3600000 + _res_remain_min * 60000 + ( _res_remain_second*1000);
+                                seconds = _res_remain_hour * 3600000 + _res_remain_min * 60000 + (_res_remain_second * 1000);
                                 broadTimer = new BroadTimer(seconds, 1000);
                                 broadTimer.start();
                                 //방송등록여부 미리체크하기.(구현해야함)
                                 res_cnt = (String) _res_result.get("res_cnt");//사연갯수
                                 countView.setText("오늘 온 사연 " + res_cnt + "개");
                                 String res_login_yn = (String) _res_result.get("_login_yn");//로그인여부
-                                System.out.println("#############"+_res_svc+"@@@@@@@"+_res_is_next_brdcast+_res_date+res_cnt+res_login_yn);
+                                System.out.println("#############" + _res_svc + "@@@@@@@" + _res_is_next_brdcast + _res_date + res_cnt + res_login_yn);
                                 String time1 = String.valueOf(_res_remain_hour);
                                 String time2 = String.valueOf(_res_remain_min);
                                 String time3 = String.valueOf(_res_remain_second);
-                                System.out.println(time1+time2+time3);
+                                System.out.println(time1 + time2 + time3);
 
                             } else if (_res_is_next_brdcast.equalsIgnoreCase("n")) {
                                 textView.setText(R.string.broadNo);
+                                
                             }
 
                         }
@@ -176,14 +165,14 @@ public class HomeFragment extends Fragment {
                 }
             });
 
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        catch (JSONException e)
-        {e.printStackTrace();}
         //서버와의 연결 체크
-        if(isConnected()) {
+        if (isConnected()) {
             Log.d(MSG, "서버와 연결되었습니다");
             //Toast.makeText(getActivity().getApplicationContext(), "서버와 연결되었습니다", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             Log.d(MSG, "서버와 연결되지 않았습니다");
             //Toast.makeText(getActivity().getApplicationContext(), "서버와 연결되지 않았습니다", Toast.LENGTH_SHORT).show();
         }
@@ -197,18 +186,8 @@ public class HomeFragment extends Fragment {
         countView = (TextView) view.findViewById(R.id.countView);
         textView = (TextView) view.findViewById(R.id.textView);
         remainTime = (TextView) view.findViewById(R.id.remainTime);
-        star1 = (ImageView) view.findViewById(R.id.imageView);
-        star2 = (ImageView) view.findViewById(R.id.star2);
-        star3 = (ImageView) view.findViewById(R.id.star3);
-        star4 = (ImageView) view.findViewById(R.id.star4);
-        star5 = (ImageView) view.findViewById(R.id.star5);
-        star6 = (ImageView) view.findViewById(R.id.star6);
-        starAnimate1 = (AnimationDrawable) star1.getDrawable();
-        starAnimate2 = (AnimationDrawable) star2.getDrawable();
-        starAnimate3 = (AnimationDrawable) star3.getDrawable();
-        starAnimate4 = (AnimationDrawable) star4.getDrawable();
-        starAnimate5 = (AnimationDrawable) star5.getDrawable();
-        starAnimate6 = (AnimationDrawable) star6.getDrawable();
+        animatedStar = (ImageView) view.findViewById(R.id.stars);
+        starAnimate1 = (AnimationDrawable) animatedStar.getDrawable();
 
         try {
             getData();
@@ -220,13 +199,8 @@ public class HomeFragment extends Fragment {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     starAnimate1.start();
-                    starAnimate2.start();
-                    starAnimate3.start();
-                    starAnimate4.start();
-                    starAnimate5.start();
-                    starAnimate6.start();
                 }
                 return true;
             }
@@ -240,13 +214,22 @@ public class HomeFragment extends Fragment {
         countView.setTypeface(typeface);
         textView.setTypeface(typeface);
         remainTime.setTypeface(typeface);
+    }
 
-
+    private void setTextColor() {
+        textView.setTextColor(getResources().getColor(R.color.oddity));
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
+        starAnimate1.stop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        starAnimate1.start();
         try {
             getData();
         } catch (JSONException e) {
@@ -295,14 +278,15 @@ public class HomeFragment extends Fragment {
                                 res_cnt = (String) _res_result.get("res_cnt");//사연갯수
                                 countView.setText("오늘 온 사연 " + res_cnt + "개");
                                 String res_login_yn = (String) _res_result.get("_login_yn");//로그인여부
-                                System.out.println("#############"+_res_svc+"@@@@@@@"+_res_is_next_brdcast+_res_date+res_cnt+res_login_yn);
+                                System.out.println("#############" + _res_svc + "@@@@@@@" + _res_is_next_brdcast + _res_date + res_cnt + res_login_yn);
                                 String time1 = String.valueOf(_res_remain_hour);
                                 String time2 = String.valueOf(_res_remain_min);
                                 String time3 = String.valueOf(_res_remain_second);
-                                System.out.println(time1+time2+time3);
+                                System.out.println(time1 + time2 + time3);
 
                             } else if (_res_is_next_brdcast.equalsIgnoreCase("n")) {
                                 textView.setText(R.string.broadNo);
+
                             }
 
                         }
@@ -313,7 +297,7 @@ public class HomeFragment extends Fragment {
 
                 }
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -347,7 +331,7 @@ public class HomeFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
 
             //사용자가 보지 않았을 시
         }
@@ -380,10 +364,15 @@ public class HomeFragment extends Fragment {
         private static final String tag = "GCMIntentService";
         //PROJECT_ID = google api id값
         private static final String PROJECT_ID = "임시sZmSuG1DSDPqlXUYCM";
-        //public 기본 생성자를 무조건 만들어야 한다.
-        public GCMIntentService(){ this(PROJECT_ID); }
 
-        public GCMIntentService(String project_id) { super(project_id); }
+        //public 기본 생성자를 무조건 만들어야 한다.
+        public GCMIntentService() {
+            this(PROJECT_ID);
+        }
+
+        public GCMIntentService(String project_id) {
+            super(project_id);
+        }
 
         //푸시로 받은 메시지
         @Override
@@ -391,29 +380,29 @@ public class HomeFragment extends Fragment {
             Bundle b = intent.getExtras();
 
             Iterator<String> iterator = b.keySet().iterator();
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 String key = iterator.next();
                 String value = b.get(key).toString();
-                Log.d(tag, "onMessage. "+key+" : "+value);
+                Log.d(tag, "onMessage. " + key + " : " + value);
             }
         }
 
         //에러 발생시
         @Override
         protected void onError(Context context, String errorId) {
-            Log.d(tag, "onError. errorId : "+errorId);
+            Log.d(tag, "onError. errorId : " + errorId);
         }
 
         //단말에서 GCM 서비스 등록 했을 때 등록 id를 받는다
         @Override
         protected void onRegistered(Context context, String regId) {
-            Log.d(tag, "onRegistered. regId : "+regId);
+            Log.d(tag, "onRegistered. regId : " + regId);
         }
 
         //단말에서 GCM 서비스 등록 해지를 하면 해지된 등록 id를 받는다
         @Override
         protected void onUnregistered(Context context, String regId) {
-            Log.d(tag, "onUnregistered. regId : "+regId);
+            Log.d(tag, "onUnregistered. regId : " + regId);
         }
     }
 
@@ -422,7 +411,8 @@ public class HomeFragment extends Fragment {
         int hour;
         int min;
         int sec;
-        public BroadTimer (long startTime, long interval) {
+
+        public BroadTimer(long startTime, long interval) {
             super(startTime, interval);
 
         }
@@ -430,10 +420,10 @@ public class HomeFragment extends Fragment {
         @Override
         public void onTick(long millisUntilFinished) {
             Date t_d = new Date(millisUntilFinished);
-            hour = (int) ((millisUntilFinished / (3600*1000) ) % 24 );
-            min = (int ) (millisUntilFinished / (60 * 1000)) % 60 ;
+            hour = (int) ((millisUntilFinished / (3600 * 1000)) % 24);
+            min = (int) (millisUntilFinished / (60 * 1000)) % 60;
             sec = (int) (millisUntilFinished / 1000) % 60;
-            remainTime.setText(hour+":"+min+":"+sec);
+            remainTime.setText(hour + ":" + min + ":" + sec);
             //remainTime.setText(timeFormat.format(t_d.getTime()));
         }
 

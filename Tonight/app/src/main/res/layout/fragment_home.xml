@@ -11,6 +11,20 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/stars"
+            android:src = "@drawable/animate"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:focusableInTouchMode="true"
+            android:layout_toEndOf="@+id/remainTime"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:adjustViewBounds="true" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,65 +63,6 @@
             android:layout_marginTop="10dp"
             android:textColor="@color/white"
             android:textSize="11pt" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView"
-            android:background="@drawable/animate"
-            android:src = "@drawable/animate"
-            android:layout_alignTop="@+id/remainTime"
-            android:layout_alignLeft="@+id/remainTime"
-            android:layout_alignStart="@+id/remainTime" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/star2"
-            android:src = "@drawable/animate"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/textView"
-            android:layout_toEndOf="@+id/textView"
-            android:layout_marginLeft="44dp"
-            android:layout_marginStart="44dp" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/star3"
-            android:src = "@drawable/animate"
-            android:layout_above="@+id/star2"
-            android:layout_toLeftOf="@+id/textView"
-            android:layout_toStartOf="@+id/textView"
-            android:layout_marginRight="27dp"
-            android:layout_marginEnd="27dp" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/star4"
-            android:src = "@drawable/animate"
-            android:layout_below="@+id/imageView"
-            android:layout_alignLeft="@+id/star3"
-            android:layout_alignStart="@+id/star3" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/star5"
-            android:src = "@drawable/animate"
-            android:layout_below="@+id/star4"
-            android:layout_alignLeft="@+id/star2"
-            android:layout_alignStart="@+id/star2" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/star6"
-            android:src = "@drawable/animate"
-            android:layout_alignBottom="@+id/countView"
-            android:layout_toRightOf="@+id/star3"
-            android:layout_toEndOf="@+id/star3" />
 
     </RelativeLayout>
 

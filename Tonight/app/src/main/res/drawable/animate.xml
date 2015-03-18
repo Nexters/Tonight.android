@@ -2,7 +2,7 @@
 <animation-list
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:oneshot="false">
-    <item android:drawable="@drawable/star" android:duration="500"></item>
-    <item android:drawable="@drawable/dark" android:duration="500"></item>
+    <item android:drawable="@drawable/stars" android:duration="500"></item>
+    <item android:drawable="@drawable/darkstars" android:duration="500"></item>
 
 </animation-list>
