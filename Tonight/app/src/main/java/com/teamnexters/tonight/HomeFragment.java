@@ -108,7 +108,6 @@ public class HomeFragment extends Fragment {
 
             //원하는 json데이터 값 : jstring
             String jstring = jObject.toString();
-            Log.i(MSG, "json :" + jstring);
             RequestParams paramList = new RequestParams("JSONData", jstring);
             //async library 사용
             AsyncHttpClient mClient = new AsyncHttpClient();
@@ -128,8 +127,6 @@ public class HomeFragment extends Fragment {
                             JSONObject _res_result = (JSONObject) _res_data.get(0);
                             String _res_is_next_brdcast = (String) _res_result.get("is_next_brdcast");//방송등록여부
                             if (_res_is_next_brdcast.equalsIgnoreCase("y")) { //다음방송 있음. 시간/사연 정보 받기 가능
-
-                                String _res_date = (String) _res_result.get("date");//날짜
                                 _res_remain_hour = (int) _res_result.get("remain_hour");//남은hour
                                 _res_remain_min = (int) _res_result.get("remain_min");//남은minute
                                 _res_remain_second = (int) _res_result.get("remain_second");//남은second
@@ -139,16 +136,10 @@ public class HomeFragment extends Fragment {
                                 //방송등록여부 미리체크하기.(구현해야함)
                                 res_cnt = (String) _res_result.get("res_cnt");//사연갯수
                                 countView.setText("오늘 온 사연 " + res_cnt + "개");
-                                String res_login_yn = (String) _res_result.get("_login_yn");//로그인여부
-                                System.out.println("#############" + _res_svc + "@@@@@@@" + _res_is_next_brdcast + _res_date + res_cnt + res_login_yn);
-                                String time1 = String.valueOf(_res_remain_hour);
-                                String time2 = String.valueOf(_res_remain_min);
-                                String time3 = String.valueOf(_res_remain_second);
-                                System.out.println(time1 + time2 + time3);
 
                             } else if (_res_is_next_brdcast.equalsIgnoreCase("n")) {
                                 textView.setText(R.string.broadNo);
-                                
+
                             }
 
                         }
@@ -253,7 +244,6 @@ public class HomeFragment extends Fragment {
 
             //원하는 json데이터 값 : jstring
             String jstring = jObject.toString();
-            Log.i(MSG, "json :" + jstring);
             RequestParams paramList = new RequestParams("JSONData", jstring);
             //async library 사용
             AsyncHttpClient mClient = new AsyncHttpClient();
@@ -273,17 +263,8 @@ public class HomeFragment extends Fragment {
                             JSONObject _res_result = (JSONObject) _res_data.get(0);
                             String _res_is_next_brdcast = (String) _res_result.get("is_next_brdcast");//방송등록여부
                             if (_res_is_next_brdcast.equalsIgnoreCase("y")) { //다음방송 있음. 시간/사연 정보 받기 가능
-
-                                String _res_date = (String) _res_result.get("date");//날짜
                                 res_cnt = (String) _res_result.get("res_cnt");//사연갯수
                                 countView.setText("오늘 온 사연 " + res_cnt + "개");
-                                String res_login_yn = (String) _res_result.get("_login_yn");//로그인여부
-                                System.out.println("#############" + _res_svc + "@@@@@@@" + _res_is_next_brdcast + _res_date + res_cnt + res_login_yn);
-                                String time1 = String.valueOf(_res_remain_hour);
-                                String time2 = String.valueOf(_res_remain_min);
-                                String time3 = String.valueOf(_res_remain_second);
-                                System.out.println(time1 + time2 + time3);
-
                             } else if (_res_is_next_brdcast.equalsIgnoreCase("n")) {
                                 textView.setText(R.string.broadNo);
 

@@ -154,7 +154,7 @@ public class RecordFragment extends Fragment {
                     btnDone.setVisibility(View.VISIBLE);
                     btnStart.setEnabled(false);
                     try {
-                            startRecording();
+                        startRecording();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -162,7 +162,7 @@ public class RecordFragment extends Fragment {
                     break;
                 case R.id.btn_play:
                     try {
-                        if ( player.isPlaying() ) {
+                        if (player != null && player.isPlaying()) {
                             stopPlaying();
                             btnPlay.setBackground(getResources().getDrawable(R.drawable.record));
                         } else {
@@ -243,7 +243,7 @@ public class RecordFragment extends Fragment {
 
     private void ditchMediaRecorder() {
         if (recorder != null)
-            recorder.release();
+            recorder.reset();
     }
 
     //취소 버튼 클릭 시 확인창
@@ -440,7 +440,7 @@ public class RecordFragment extends Fragment {
                         result += line;
 
                     }
-                }  else {
+                } else {
 
                 }
             } catch (UnsupportedEncodingException e) {
@@ -457,7 +457,7 @@ public class RecordFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
- //if문(android version)
+        //if문(android version)
     }
 
 
