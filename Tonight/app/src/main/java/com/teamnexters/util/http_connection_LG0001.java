@@ -1,4 +1,4 @@
-package com.example.lgpc.util;
+package com.teamnexters.util;
 
 import android.content.Context;
 import android.util.Log;

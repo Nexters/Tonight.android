@@ -1,7 +1,4 @@
 package com.teamnexters.tonight;
-/**
- * Created by lgpc on 2015-03-16.
- */
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
